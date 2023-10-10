@@ -53,34 +53,35 @@ export const getCountriesData = async (req, res) => {
   }
 };
 
-export const getCountriesAndYears = async (req, res) => {
+export const getCountriesAndDecades = async (req, res) => {
   try {
     const allDocuments = await Documents.find().exec();
 
-    // Crear un objeto para realizar el conteo de años
-    const yearCounts = {};
+    // Crear un objeto para realizar el conteo de décadas
+    const decadeCounts = {};
 
-    // Iterar sobre los documentos y contar las apariciones de cada año
+    // Iterar sobre los documentos y contar las apariciones de cada década
     allDocuments.forEach((document) => {
       const year = document.year; // Asegúrate de que el nombre del campo sea correcto
-      if (yearCounts[year]) {
-        yearCounts[year] += 1;
+      const decade = Math.floor(year / 10) * 10; // Agrupar años en décadas
+      if (decadeCounts[decade]) {
+        decadeCounts[decade] += 1;
       } else {
-        yearCounts[year] = 1;
+        decadeCounts[decade] = 1;
       }
     });
 
-    // Obtener los años distintos
-    const distinctYears = Object.keys(yearCounts);
+    // Obtener las décadas distintas y ordenarlas
+    const distinctDecades = Object.keys(decadeCounts).map(Number);
+    distinctDecades.sort((a, b) => a - b);
 
-    // Crear un array de años con sus respectivos conteos
-    const years = distinctYears.map((year) => {
-      return { "name_es": year, count: yearCounts[year] };
+    // Crear un array de décadas con sus respectivos conteos
+    const decades = distinctDecades.map((decade) => {
+      return { "name_es": `${decade}-${decade + 9}`, count: decadeCounts[decade] };
     });
 
-    const XLabels = years.map((label) => label.count)
-    const YLabels = years.map((label) => label["name_es"])
-
+    const XLabels = decades.map((label) => label.count);
+    const YLabels = decades.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
     const distinctCountries = await Documents.distinct("pais de la publicación").exec();
@@ -88,12 +89,13 @@ export const getCountriesAndYears = async (req, res) => {
       return { "name_es": country };
     });
 
-    // Enviar la respuesta con los países y el conteo de años
-    res.send([countries,years,YLabels,XLabels]);
+    // Enviar la respuesta con los países y el conteo de décadas
+    res.send([countries, decades, YLabels, XLabels]);
   } catch (error) {
     res.send(error);
   }
 };
+
 
 
  
