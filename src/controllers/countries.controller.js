@@ -133,7 +133,7 @@ export const getCountriesAndAreas = async (req, res) => {
     });
 
     // Enviar la respuesta con las áreas y el conteo
-    res.send({ countries, areas, YLabels, XLabels });
+    res.send([ countries, areas, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
@@ -177,12 +177,11 @@ export const getCountriesAndFieldStudy = async (req, res) => {
     });
 
     // Enviar la respuesta con los campos y el conteo
-    res.send({ countries, fields, YLabels, XLabels });
+    res.send([ countries, fields, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
 };
-
 
 export const getCountriesAndDisciplines = async (req, res) => {
   try {
@@ -222,12 +221,14 @@ export const getCountriesAndDisciplines = async (req, res) => {
     });
 
     // Enviar la respuesta con las disciplinas y el conteo
-    res.send({ countries, disciplines, YLabels, XLabels });
+    res.send([ countries, disciplines, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
 };
 
+// TODO
+// PENDIENTE DE QUE FUNCIONE
 
 export const getRegions = async (req,res) => {
   try {
@@ -236,6 +237,9 @@ export const getRegions = async (req,res) => {
     
   }
 }
+
+// TODO
+// PENDIENTE DE QUE FUNCIONE
 
 export const getAuthors = async (req,res) => {
   try {
@@ -283,12 +287,11 @@ export const getCountriesAndDocumentType = async (req, res) => {
     });
 
     // Enviar la respuesta con los tipos de documento y el conteo
-    res.send({ countries, documentTypes, YLabels, XLabels });
+    res.send([ countries, documentTypes, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
 };
-
 
 export const getCountriesAndEditorial = async (req, res) => {
   try {
@@ -328,7 +331,7 @@ export const getCountriesAndEditorial = async (req, res) => {
     });
 
     // Enviar la respuesta con los libros-editorial y el conteo
-    res.send({ countries, librosEditorial, YLabels, XLabels });
+    res.send([ countries, librosEditorial, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
@@ -375,7 +378,7 @@ export const getCountriesAndInstitution = async (req, res) => {
     });
 
     // Enviar la respuesta con las tesis-institución y el conteo
-    res.send({ countries, tesisInstitucion, YLabels, XLabels });
+    res.send([ countries, tesisInstitucion, YLabels, XLabels ]);
   } catch (error) {
     res.send(error);
   }
