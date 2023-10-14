@@ -2,7 +2,7 @@ import Documents from '../models/document.model.js';
 
 export const getCountries = async (req, res) => {
   try {
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -18,7 +18,7 @@ export const getCountriesWithCount = async (req, res) => {
     const countriesWithCounts = await Documents.aggregate([
       {
         $group: {
-          _id: "$pais de la publicación",
+          _id: "$País de la Publicación",
           count: { $sum: 1 }
         }
       }
@@ -45,7 +45,7 @@ export const getCountriesWithCount = async (req, res) => {
 export const getCountriesData = async (req, res) => {
   const search = req.query.search;
   try {
-    const countriesData = await Documents.find({"pais de la publicación" : { $regex: search, $options : "i" }})
+    const countriesData = await Documents.find({"País de la Publicación" : { $regex: search, $options : "i" }})
     res.send(countriesData);
   } catch (error) {
     res.send(error);
@@ -61,7 +61,7 @@ export const getCountriesAndDecades = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada década
     allDocuments.forEach((document) => {
-      const year = document.year; // Asegúrate de que el nombre del campo sea correcto
+      const year = document["Año"]; // Asegúrate de que el nombre del campo sea correcto
       const decade = Math.floor(year / 10) * 10; // Agrupar años en décadas
       if (decadeCounts[decade]) {
         decadeCounts[decade] += 1;
@@ -83,7 +83,7 @@ export const getCountriesAndDecades = async (req, res) => {
     const YLabels = decades.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -104,7 +104,7 @@ export const getCountriesAndAreas = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada área
     allDocuments.forEach((document) => {
-      const area = document.area; // Reemplaza 'area' con el nombre del campo correcto
+      const area = document["Área"]; // Reemplaza 'area' con el nombre del campo correcto
       if (areaCounts[area]) {
         areaCounts[area] += 1;
       } else {
@@ -127,7 +127,7 @@ export const getCountriesAndAreas = async (req, res) => {
     const YLabels = areas.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -148,7 +148,7 @@ export const getCountriesAndFieldStudy = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada campo
     allDocuments.forEach((document) => {
-      const field = document.campo; // Reemplaza 'field' con el nombre del campo correcto
+      const field = document.Campo; // Reemplaza 'field' con el nombre del campo correcto
       if (fieldCounts[field]) {
         fieldCounts[field] += 1;
       } else {
@@ -171,7 +171,7 @@ export const getCountriesAndFieldStudy = async (req, res) => {
     const YLabels = fields.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -192,7 +192,7 @@ export const getCountriesAndDisciplines = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada disciplina
     allDocuments.forEach((document) => {
-      const discipline = document.disciplina; // Reemplaza 'discipline' con el nombre del campo correcto
+      const discipline = document.Disciplina; // Reemplaza 'discipline' con el nombre del campo correcto
       if (disciplineCounts[discipline]) {
         disciplineCounts[discipline] += 1;
       } else {
@@ -215,7 +215,7 @@ export const getCountriesAndDisciplines = async (req, res) => {
     const YLabels = disciplines.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -258,7 +258,7 @@ export const getCountriesAndDocumentType = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada tipo de documento
     allDocuments.forEach((document) => {
-      const documentType = document["tipo de documento"]; // Asegúrate de usar el nombre correcto del campo
+      const documentType = document["Tipo de Documento"]; // Asegúrate de usar el nombre correcto del campo
       if (documentTypeCounts[documentType]) {
         documentTypeCounts[documentType] += 1;
       } else {
@@ -281,7 +281,7 @@ export const getCountriesAndDocumentType = async (req, res) => {
     const YLabels = documentTypes.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -302,7 +302,7 @@ export const getCountriesAndEditorial = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada libro-editorial
     allDocuments.forEach((document) => {
-      const libroEditorial = document["libros-editorial"]; // Asegúrate de usar el nombre correcto del campo
+      const libroEditorial = document["Libros/Editorial"]; // Asegúrate de usar el nombre correcto del campo
       if (librosEditorialCounts[libroEditorial]) {
         librosEditorialCounts[libroEditorial] += 1;
       } else {
@@ -325,7 +325,7 @@ export const getCountriesAndEditorial = async (req, res) => {
     const YLabels = librosEditorial.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -349,7 +349,7 @@ export const getCountriesAndInstitution = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada tesis-institución
     allDocuments.forEach((document) => {
-      const tesisInstitucion = document["tesis-institución"]; // Asegúrate de usar el nombre correcto del campo
+      const tesisInstitucion = document["Tesis/ Institución"]; // Asegúrate de usar el nombre correcto del campo
       if (tesisInstitucionCounts[tesisInstitucion]) {
         tesisInstitucionCounts[tesisInstitucion] += 1;
       } else {
@@ -372,7 +372,7 @@ export const getCountriesAndInstitution = async (req, res) => {
     const YLabels = tesisInstitucion.map((label) => label["name_es"]);
 
     // Obtener los países de la publicación como en tu función original
-    const distinctCountries = await Documents.distinct("pais de la publicación").exec();
+    const distinctCountries = await Documents.distinct("País de la Publicación").exec();
     const countries = distinctCountries.map((country) => {
       return { "name_es": country };
     });
@@ -383,10 +383,3 @@ export const getCountriesAndInstitution = async (req, res) => {
     res.send(error);
   }
 };
-
-
-
-
- 
-
-

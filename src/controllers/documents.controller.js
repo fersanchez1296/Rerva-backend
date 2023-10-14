@@ -5,16 +5,15 @@ export const getDocuments = async(req,res) => {
     try {
         const getDocument = await Documents.find({
             $or: [
-             { "coautor": { $regex: search, $options : "i" } },
-             { "autor principal": { $regex: search, $options : "i" } },
-             { "titulo": { $regex: search, $options : "i" } },
-             { "tema": { $regex: search, $options : "i" } },
-             { "país de la publicación": { $regex: search, $options : "i" } },
-             { "nombre de la revista o libro": { $regex: search, $options : "i" } },
-             { "tipo de documento": { $regex: search, $options : "i" } },
-             { "libros-editorial": { $regex: search, $options : "i" } },
-             { "compilador-editor-coordinador-libro": { $regex: search, $options : "i" } },
-             { "territorio analizado": { $regex: search, $options : "i" } } 
+             { Autores: { $regex: search, $options : "i" } },
+             { "Título": { $regex: search, $options : "i" } },
+             { "Temática": { $regex: search, $options : "i" } },
+             { "País de la Publicación": { $regex: search, $options : "i" } },
+             { "Nombre de la revista/libro": { $regex: search, $options : "i" } },
+             { "Tipo de documento": { $regex: search, $options : "i" } },
+             { "Libros/Editorial": { $regex: search, $options : "i" } },
+             { "Compilador/ Editor/ Coordinador/ Libro": { $regex: search, $options : "i" } },
+             { "Municipios de estudio": { $regex: search, $options : "i" } } 
             ]
           })
         res.send(getDocument) 
