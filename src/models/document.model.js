@@ -68,7 +68,9 @@ const documentSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    Disciplina: {
+    //TODO
+    //arreglar en BD
+    "Disciplina ": {
       type: String,
       required: true,
       trim: true,

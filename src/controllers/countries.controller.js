@@ -192,7 +192,7 @@ export const getCountriesAndDisciplines = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada disciplina
     allDocuments.forEach((document) => {
-      const discipline = document.Disciplina; // Reemplaza 'discipline' con el nombre del campo correcto
+      const discipline = document["Disciplina "]; // Reemplaza 'discipline' con el nombre del campo correcto
       if (disciplineCounts[discipline]) {
         disciplineCounts[discipline] += 1;
       } else {
@@ -258,7 +258,7 @@ export const getCountriesAndDocumentType = async (req, res) => {
 
     // Iterar sobre los documentos y contar las apariciones de cada tipo de documento
     allDocuments.forEach((document) => {
-      const documentType = document["Tipo de Documento"]; // Asegúrate de usar el nombre correcto del campo
+      const documentType = document["Tipo de documento"]; // Asegúrate de usar el nombre correcto del campo
       if (documentTypeCounts[documentType]) {
         documentTypeCounts[documentType] += 1;
       } else {
