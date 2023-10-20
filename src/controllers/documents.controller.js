@@ -25,3 +25,19 @@ export const getDocuments = async(req,res) => {
 export const postDocument = (req, res) => {
     res.send(">>>Agregando")
 }
+
+
+
+export const getDocumentsForDecades = async(req,res) => {
+    const search = req.query.search;
+    try {
+        const documentsForDecades = await Documents.find({
+            $or: [
+                { "Año": { $regex: search, $options : "i" } },
+               ]
+        })
+        res.send(documentsForDecades)
+    } catch (error) {
+        res.send(error)
+    }
+}
