@@ -1,43 +1,54 @@
-import Documents from '../models/document.model.js'
+import Documents from "../models/document.model.js";
 
-export const getDocuments = async(req,res) => {
-    const search = req.query.search;
-    try {
-        const getDocument = await Documents.find({
-            $or: [
-             { Autores: { $regex: search, $options : "i" } },
-             { "Título": { $regex: search, $options : "i" } },
-             { "Temática": { $regex: search, $options : "i" } },
-             { "País de la Publicación": { $regex: search, $options : "i" } },
-             { "Nombre de la revista/libro": { $regex: search, $options : "i" } },
-             { "Tipo de documento": { $regex: search, $options : "i" } },
-             { "Libros/Editorial": { $regex: search, $options : "i" } },
-             { "Compilador/ Editor/ Coordinador/ Libro": { $regex: search, $options : "i" } },
-             { "Municipios de estudio": { $regex: search, $options : "i" } } 
-            ]
-          })
-        res.send(getDocument) 
-    } catch (error) {
-        res.send(error)
-    }
-}
+export const getDocuments = async (req, res) => {
+  const search = req.query.search;
+  try {
+    const getDocument = await Documents.find({
+      $or: [
+        { Autores: { $regex: search, $options: "i" } },
+        { Título: { $regex: search, $options: "i" } },
+        { Temática: { $regex: search, $options: "i" } },
+        { "País de la Publicación": { $regex: search, $options: "i" } },
+        { "Nombre de la revista/libro": { $regex: search, $options: "i" } },
+        { "Tipo de documento": { $regex: search, $options: "i" } },
+        { "Libros/Editorial": { $regex: search, $options: "i" } },
+        {
+          "Compilador/ Editor/ Coordinador/ Libro": {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        { "Municipios de estudio": { $regex: search, $options: "i" } },
+      ],
+    });
+    res.send(getDocument);
+  } catch (error) {
+    res.send(error);
+  }
+};
 
 export const postDocument = (req, res) => {
-    res.send(">>>Agregando")
-}
+  res.send(">>>Agregando");
+};
 
-
-
-export const getDocumentsForDecades = async(req,res) => {
-    const search = req.query.search;
-    try {
-        const documentsForDecades = await Documents.find({
-            $or: [
-                { "Año": { $regex: search, $options : "i" } },
-               ]
-        })
-        res.send(documentsForDecades)
-    } catch (error) {
-        res.send(error)
-    }
-}
+export const getDocumentsForDecades = async (req, res) => {
+  const yearRange = req.query.search;
+  const [startYear, endYear] = yearRange.split("-").map(Number);
+  const yearArray = Array.from(
+    { length: endYear - startYear + 1 },
+    (_, index) => startYear + index
+  );
+  try {
+    const documentsForDecades = await Documents.find({
+      año: { $in: yearArray },
+    }).toArray((err, result) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+    });
+    res.send(documentsForDecades);
+  } catch (error) {
+    res.send(error);
+  }
+};
