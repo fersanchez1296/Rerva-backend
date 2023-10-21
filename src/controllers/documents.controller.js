@@ -40,7 +40,7 @@ export const getDocumentsForDecades = async (req, res) => {
   );
   try {
     const documentsForDecades = await Documents.find({
-      año: { $in: yearArray },
+      "Año": { $in: yearArray },
     }).toArray((err, result) => {
       if (err) {
         console.error(err);
