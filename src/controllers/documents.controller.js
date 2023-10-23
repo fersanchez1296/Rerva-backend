@@ -40,14 +40,94 @@ export const getDocumentsForDecades = async (req, res) => {
   );
   try {
     const documentsForDecades = await Documents.find({
-      "Año": { $in: yearArray },
-    }).toArray((err, result) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    });
+      Año: { $in: yearArray },
+    }).exec();
     res.send(documentsForDecades);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForArea = async (req, res) => {
+  const area = req.query.search;
+  const encodedSearch = encodeURIComponent(area);
+  try {
+    const documentsForArea = await Documents.find({
+      "Área": area,
+    }).exec();
+    res.send(documentsForArea);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForDiscipline = async (req, res) => {
+  const discipline = req.query.search;
+  try {
+    const documentsForDiscipline = await Documents.find({
+      ["Disciplina "]: discipline,
+    }).exec();
+    res.send(documentsForDiscipline);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForFieldStudy = async (req, res) => {
+  const fieldStudy = req.query.search;
+  try {
+    const documentsForFieldStudy = await Documents.find({
+      "Campo" : fieldStudy,
+    }).exec();
+    res.send(documentsForFieldStudy);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForDocumentType = async (req, res) => {
+  const documentType = req.query.search;
+  try {
+    const documentsForDocumentType = await Documents.find({
+      ["Tipo de documento"] : documentType,
+    }).exec();
+    res.send(documentsForDocumentType);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForEditorial = async (req, res) => {
+  const editorial = req.query.search;
+  try {
+    const documentsForEditorial = await Documents.find({
+      ["Libros/Editorial"] : editorial,
+    }).exec();
+    res.send(documentsForEditorial);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForPais = async (req, res) => {
+  const pais = req.query.search;
+  try {
+    const documentsForPais = await Documents.find({
+      ["País de la Publicación"] : pais,
+    }).exec();
+    res.send(documentsForPais);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getDocumentsForAuthor = async (req, res) => {
+  const autor = req.query.search;
+  try {
+    const documentsForAuthor = await Documents.find({
+      ["Autores"] :autor,
+    }).exec();
+    res.send(documentsForAuthor);
   } catch (error) {
     res.send(error);
   }

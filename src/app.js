@@ -5,6 +5,7 @@ import countriesRoutes from './routes/countries.routes.js'
 import cors from "cors"
 import 'dotenv/config'
 const app = express();
+app.use(express.urlencoded({ extended: false, decode: (str) => decodeURIComponent(str) }));
 const URL_CONNNECT = process.env.URL_CONNNECT
 export const PORT = process.env.PORT
 app.use(morgan("dev"));
