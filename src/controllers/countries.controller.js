@@ -269,10 +269,14 @@ export const getMunicipios = async (req, res) => {
       count: count
     }));
 
+    const muni = Object.entries(result).map(([municipio, count]) => ({
+      name_es: municipio,
+    }));
+
     const YLabels = finalResult.map((label) => label.name_es)
     const XLabels = finalResult.map((label) => label.count)
 
-    res.send([{},finalResult,YLabels,XLabels]);
+    res.send([muni,finalResult,YLabels,XLabels]);
   } catch (error) {
     res.send(error);
   }
