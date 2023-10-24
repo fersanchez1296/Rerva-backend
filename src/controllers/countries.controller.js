@@ -232,7 +232,13 @@ export const getCountriesAndDisciplines = async (req, res) => {
 
 export const getMunicipios = async (req, res) => {
   try {
-    const countriesWithCounts = await Documents.aggregate([
+    const municipiosData = await Documents.aggregate([
+      {
+        $unwind: {
+          path: "$Municipios de estudio",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {
         $group: {
           _id: "$Municipios de estudio",
@@ -241,23 +247,39 @@ export const getMunicipios = async (req, res) => {
       }
     ]);
 
-    const countries = countriesWithCounts.map((country) => ({
-      name_es: country._id,
+    const municipios = municipiosData.map((municipio) => ({
+      name_es: municipio._id.split(',').map((municipio) => municipio.trim()), // Dividir por comas y eliminar espacios en blanco
+      count: municipio.count
     }));
 
-    const countriesCount = countriesWithCounts.map((country) => ({
-      name_es: country._id,
-      count: country.count
+    // Reorganizar el resultado para contar cada municipio por separado
+    const result = {};
+    municipios.forEach((municipio) => {
+      municipio.name_es.forEach((m) => {
+        if (!result[m]) {
+          result[m] = 0;
+        }
+        result[m] += municipio.count;
+      });
+    });
+
+    // Convertir el resultado en el formato deseado
+    const finalResult = Object.entries(result).map(([municipio, count]) => ({
+      name_es: municipio,
+      count: count
     }));
 
-    const YLabels = countriesCount.map((label) => label.name_es)
-    const XLabels = countriesCount.map((label) => label.count)
+    const YLabels = finalResult.map((label) => label.name_es)
+    const XLabels = finalResult.map((label) => label.count)
 
-    res.send([countries,countriesCount,YLabels,XLabels]);
+    res.send([{},finalResult,YLabels,XLabels]);
   } catch (error) {
     res.send(error);
   }
 };
+
+
+
 
 // TODO
 // PENDIENTE DE QUE FUNCIONE
