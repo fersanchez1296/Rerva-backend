@@ -121,6 +121,7 @@ export const getDocumentsForPais = async (req, res) => {
   }
 };
 
+
 export const getDocumentsForAuthor = async (req, res) => {
   const autor = req.query.search;
   try {

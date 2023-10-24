@@ -230,13 +230,17 @@ export const getCountriesAndDisciplines = async (req, res) => {
 // TODO
 // PENDIENTE DE QUE FUNCIONE
 
-export const getRegions = async (req,res) => {
+export const getMunicipios = async (req, res) => {
   try {
-    
+    const distinctMunicipios = await Documents.distinct("Municipios de estudio").exec();
+    const municipios = distinctMunicipios.map((municipio) => {
+      return { "name_es": municipio };
+    });
+    res.send(municipios);
   } catch (error) {
-    
+    res.send(error);
   }
-}
+};
 
 // TODO
 // PENDIENTE DE QUE FUNCIONE
