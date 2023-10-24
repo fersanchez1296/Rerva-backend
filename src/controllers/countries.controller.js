@@ -276,7 +276,7 @@ export const getMunicipios = async (req, res) => {
     const YLabels = finalResult.map((label) => label.name_es)
     const XLabels = finalResult.map((label) => label.count)
 
-    res.send([muni,finalResult,YLabels,XLabels]);
+    res.send(municipios);
   } catch (error) {
     res.send(error);
   }

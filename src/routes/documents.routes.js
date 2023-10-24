@@ -10,6 +10,7 @@ import {
   getDocumentsForEditorial,
   getDocumentsForPais,
   getDocumentsForAuthor,
+  getDocumentsForMunicipio
 } from "../controllers/documents.controller.js";
 
 const router = Router();
@@ -22,7 +23,7 @@ router.get("/Publicaciones-por-campo-de-estudio", getDocumentsForFieldStudy);
 router.get("/Publicaciones-por-tipo-de-documento", getDocumentsForDocumentType);
 router.get("/Publicaciones-por-editorial", getDocumentsForEditorial);
 router.get("/Publicaciones-por-pais", getDocumentsForPais);
-router.get("/Publicaciones-por-municipio", getDocumentsForPais);
+router.get("/Publicaciones-por-municipio", getDocumentsForMunicipio);
 router.get("/Publicaciones-por-autor", getDocumentsForAuthor);
 router.post("/newDocument", postDocument);
 

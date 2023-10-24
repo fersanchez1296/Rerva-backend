@@ -121,6 +121,18 @@ export const getDocumentsForPais = async (req, res) => {
   }
 };
 
+export const getDocumentsForMunicipio = async (req, res) => {
+  const municipio = req.query.search;
+  try {
+    const documentsForMunicipio = await Documents.find({
+      ["Municipios de estudio"] : municipio,
+    }).exec();
+    res.send(documentsForMunicipio);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
 
 export const getDocumentsForAuthor = async (req, res) => {
   const autor = req.query.search;
