@@ -232,11 +232,28 @@ export const getCountriesAndDisciplines = async (req, res) => {
 
 export const getMunicipios = async (req, res) => {
   try {
-    const distinctMunicipios = await Documents.distinct("Municipios de estudio").exec();
-    const municipios = distinctMunicipios.map((municipio) => {
-      return { "name_es": municipio };
-    });
-    res.send(municipios);
+    const countriesWithCounts = await Documents.aggregate([
+      {
+        $group: {
+          _id: "$Municipios de estudio",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const countries = countriesWithCounts.map((country) => ({
+      name_es: country._id,
+    }));
+
+    const countriesCount = countriesWithCounts.map((country) => ({
+      name_es: country._id,
+      count: country.count
+    }));
+
+    const YLabels = countriesCount.map((label) => label.name_es)
+    const XLabels = countriesCount.map((label) => label.count)
+
+    res.send([countries,countriesCount,YLabels,XLabels]);
   } catch (error) {
     res.send(error);
   }
