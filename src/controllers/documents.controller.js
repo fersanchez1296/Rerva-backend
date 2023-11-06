@@ -125,13 +125,14 @@ export const getDocumentsForMunicipio = async (req, res) => {
   const municipio = req.query.search;
   try {
     const documentsForMunicipio = await Documents.find({
-      ["Municipios de estudio"] : municipio,
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
     }).exec();
     res.send(documentsForMunicipio);
   } catch (error) {
     res.send(error);
   }
 };
+
 
 
 export const getDocumentsForAuthor = async (req, res) => {
