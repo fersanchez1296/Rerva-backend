@@ -10,13 +10,15 @@ import {
   getDocumentsForEditorial,
   getDocumentsForPais,
   getDocumentsForAuthor,
-  getDocumentsForMunicipio
+  getDocumentsForMunicipio,
+  mapGetDocumentsForDecades
 } from "../controllers/documents.controller.js";
 
 const router = Router();
 
 router.get("/documents", getDocuments);
 router.get("/Publicaciones-por-decadas", getDocumentsForDecades);
+router.get("/map/Publicaciones-por-decadas", mapGetDocumentsForDecades);
 router.get("/Publicaciones-por-areas", getDocumentsForArea);
 router.get("/Publicaciones-por-disciplina", getDocumentsForDiscipline);
 router.get("/Publicaciones-por-campo-de-estudio", getDocumentsForFieldStudy);

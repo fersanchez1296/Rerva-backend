@@ -48,6 +48,26 @@ export const getDocumentsForDecades = async (req, res) => {
   }
 };
 
+export const mapGetDocumentsForDecades = async (req, res) => {
+  const country = req.params.pais;
+  const yearRange = req.query.search;
+  const [startYear, endYear] = yearRange.split("-").map(Number);
+  const yearArray = Array.from(
+    { length: endYear - startYear + 1 },
+    (_, index) => startYear + index
+  );
+  
+  try {
+    const documentsForDecades = await Documents.find({
+      Año: { $in: yearArray },
+      ["País de la Publicación"]: country, // Agrega la condición para el país
+    }).exec();
+    res.send(documentsForDecades);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
 export const getDocumentsForArea = async (req, res) => {
   const area = req.query.search;
   const encodedSearch = encodeURIComponent(area);
@@ -56,6 +76,25 @@ export const getDocumentsForArea = async (req, res) => {
       "Área": area,
     }).exec();
     res.send(documentsForArea);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const mapGetDocumentsForArea = async (req, res) => {
+  const mapElement = req.query.search;
+  const [startYear, endYear] = yearRange.split("-").map(Number);
+  const yearArray = Array.from(
+    { length: endYear - startYear + 1 },
+    (_, index) => startYear + index
+  );
+  
+  try {
+    const documentsForDecades = await Documents.find({
+      ["Páis de la Publicación"]: mapElement,
+      ["Área"]: country, // Agrega la condición para el país
+    }).exec();
+    res.send(documentsForDecades);
   } catch (error) {
     res.send(error);
   }
