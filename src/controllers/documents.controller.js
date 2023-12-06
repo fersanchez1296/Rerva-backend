@@ -49,24 +49,30 @@ export const getDocumentsForDecades = async (req, res) => {
 };
 
 export const mapGetDocumentsForDecades = async (req, res) => {
-  const country = req.params.pais;
-  const yearRange = req.query.search;
-  const [startYear, endYear] = yearRange.split("-").map(Number);
-  const yearArray = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, index) => startYear + index
-  );
-  
+  const country = req.query.search;
   try {
     const documentsForDecades = await Documents.find({
-      Año: { $in: yearArray },
-      ["País de la Publicación"]: country, // Agrega la condición para el país
+      ["País de la Publicación"]: country,
     }).exec();
     res.send(documentsForDecades);
   } catch (error) {
     res.send(error);
   }
 };
+
+export const mapGetDocumentsForMunicipios = async (req, res) => {
+  const country = req.query.search;
+  try {
+    const documentsForDecades = await Documents.find({
+      ["Municipios de estudio"]: country,
+    }).exec();
+    res.send(documentsForDecades);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+
 
 export const getDocumentsForArea = async (req, res) => {
   const area = req.query.search;

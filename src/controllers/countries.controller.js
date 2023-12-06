@@ -227,8 +227,6 @@ export const getCountriesAndDisciplines = async (req, res) => {
   }
 };
 
-// TODO
-// PENDIENTE DE QUE FUNCIONE
 
 export const getMunicipios = async (req, res) => {
   try {
