@@ -12,7 +12,8 @@ import {
   getDocumentsForAuthor,
   getDocumentsForMunicipio,
   mapGetDocumentsForDecades,
-  mapGetDocumentsForMunicipios
+  mapGetDocumentsForMunicipios,
+  chartsGetDocumentsForMunicipios
 } from "../controllers/documents.controller.js";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.get("/documents", getDocuments);
 router.get("/Publicaciones-por-decadas", getDocumentsForDecades);
 router.get("/map/Publicaciones-por-decadas", mapGetDocumentsForDecades);
 router.get("/map/Publicaciones-por-municipio", mapGetDocumentsForMunicipios);
+router.get("/charts/Publicaciones-por-municipio", chartsGetDocumentsForMunicipios);
 router.get("/Publicaciones-por-areas", getDocumentsForArea);
 router.get("/Publicaciones-por-disciplina", getDocumentsForDiscipline);
 router.get("/map/Publicaciones-por-disciplina", mapGetDocumentsForDecades);

@@ -61,17 +61,45 @@ export const mapGetDocumentsForDecades = async (req, res) => {
 };
 
 export const mapGetDocumentsForMunicipios = async (req, res) => {
-  const country = req.query.search;
+  const municipio = req.query.search;
   try {
-    const documentsForDecades = await Documents.find({
-      ["Municipios de estudio"]: country,
+    const documentsForMunicipio = await Documents.find({
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
     }).exec();
-    res.send(documentsForDecades);
+    res.send(documentsForMunicipio);
   } catch (error) {
     res.send(error);
   }
 };
 
+export const chartsGetDocumentsForMunicipios = async (req, res) => {
+  const municipio = req.query.search;
+  try {
+    const documentsForMunicipios = await Documents.find({
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
+    }).exec();
+    
+
+    // Crear un objeto para almacenar las frecuencias de las áreas de estudio
+    const areaFrequency = {};
+
+    // Iterar sobre los documentos y contar la frecuencia de cada área de estudio
+    documentsForMunicipios.forEach((document) => {
+      const area = document["Área"] // Asegúrate de que el nombre del campo sea correcto
+      console.log('Área:', area);
+      if (area !== undefined) {
+        // Incrementar la frecuencia de cada área
+        areaFrequency[area] = (areaFrequency[area] || 0) + 1;
+      }
+    });
+
+    // Enviar la respuesta con las frecuencias de las áreas de estudio
+    res.send(areaFrequency);
+  } catch (error) {
+    // Manejar errores
+    res.status(500).send({ error: 'Error al procesar la solicitud' });
+  }
+};
 
 
 export const getDocumentsForArea = async (req, res) => {
