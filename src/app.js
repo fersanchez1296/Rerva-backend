@@ -9,12 +9,7 @@ app.use(express.urlencoded({ extended: false, decode: (str) => decodeURIComponen
 const URL_CONNNECT = process.env.URL_CONNNECT
 export const PORT = process.env.PORT
 app.use(morgan("dev"));
-app.use(cors({
-  origin: 'http://localhost:3000',  // Reemplaza con la URL de tu frontend
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  optionsSuccessStatus: 204,
-}));
+app.use(cors());
 app.use("/api",documentsRoutes)
 app.use("/api",countriesRoutes)
 
