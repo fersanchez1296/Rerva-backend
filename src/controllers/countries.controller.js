@@ -234,51 +234,61 @@ export const getMunicipios = async (req, res) => {
       {
         $unwind: {
           path: "$Municipios de estudio",
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $group: {
           _id: "$Municipios de estudio",
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     const municipios = municipiosData.map((municipio) => ({
-      name_es: municipio._id.split(',').map((municipio) => municipio.trim()), // Dividir por comas y eliminar espacios en blanco
-      count: municipio.count
+      name_es: municipio._id
+        .split(",")
+        .map((municipio) => municipio.trim()), // Dividir por comas y eliminar espacios en blanco
+      count: municipio.count,
     }));
 
     // Reorganizar el resultado para contar cada municipio por separado
     const result = {};
     municipios.forEach((municipio) => {
       municipio.name_es.forEach((m) => {
-        if (!result[m]) {
-          result[m] = 0;
+        // Reemplazar "S/I" por "S-I"
+        const cleanedMunicipio = m === "S/I" ? "S-I" : m;
+        
+        if (!result[cleanedMunicipio]) {
+          result[cleanedMunicipio] = 0;
         }
-        result[m] += municipio.count;
+        result[cleanedMunicipio] += municipio.count;
       });
     });
 
     // Convertir el resultado en el formato deseado
     const finalResult = Object.entries(result).map(([municipio, count]) => ({
       name_es: municipio,
-      count: count
+      count: count,
     }));
 
-    const muni = Object.entries(result).map(([municipio, count]) => ({
+    // Ordenar el resultado de menor a mayor según el recuento
+    finalResult.sort((a, b) => a.count - b.count);
+
+    const muni = Object.entries(result).map(([municipio]) => ({
       name_es: municipio,
     }));
 
-    const YLabels = finalResult.map((label) => label.name_es)
-    const XLabels = finalResult.map((label) => label.count)
+    const YLabels = finalResult.map((label) => label.name_es);
+    const XLabels = finalResult.map((label) => label.count);
 
-    res.send([muni,finalResult,YLabels,XLabels]);
+    res.send([muni, finalResult, YLabels, XLabels]);
   } catch (error) {
     res.send(error);
   }
 };
+
+
 
 
 

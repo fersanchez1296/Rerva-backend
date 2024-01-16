@@ -64,7 +64,7 @@ export const mapGetDocumentsForMunicipios = async (req, res) => {
   const municipio = req.query.search;
   try {
     const documentsForMunicipio = await Documents.find({
-      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
     res.send(documentsForMunicipio);
   } catch (error) {
@@ -76,38 +76,68 @@ export const chartsGetDocumentsForMunicipios = async (req, res) => {
   const municipio = req.query.search;
   try {
     const documentsForMunicipios = await Documents.find({
-      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
-    
 
-    // Crear un objeto para almacenar las frecuencias de las áreas de estudio
     const areaFrequency = {};
+    const campoFrequency = {};
+    const clasificacionFrecuency = {};
 
-    // Iterar sobre los documentos y contar la frecuencia de cada área de estudio
     documentsForMunicipios.forEach((document) => {
-      const area = document["Área"] // Asegúrate de que el nombre del campo sea correcto
-      console.log('Área:', area);
+      const area = document["Área"];
       if (area !== undefined) {
-        // Incrementar la frecuencia de cada área
         areaFrequency[area] = (areaFrequency[area] || 0) + 1;
       }
     });
 
-    // Enviar la respuesta con las frecuencias de las áreas de estudio
-    res.send(areaFrequency);
+    documentsForMunicipios.forEach((document) => {
+      const campo = document["País de la Publicación"];
+      if (campo !== undefined) {
+        campoFrequency[campo] = (campoFrequency[campo] || 0) + 1;
+      }
+    });
+
+    documentsForMunicipios.forEach((document) => {
+      const clasificacion = document["Clasificación"];
+      if (clasificacion !== undefined) {
+        clasificacionFrecuency[clasificacion] = 
+          (clasificacionFrecuency[clasificacion] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedAreaFrequency = Object.entries(areaFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [area, count]) => ({ ...acc, [area]: count }), {});
+
+    const orderedCampoFrequency = Object.entries(campoFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [campo, count]) => ({ ...acc, [campo]: count }), {});
+
+    const orderedClasificacionFrequency = Object.entries(clasificacionFrecuency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [clasificacion, count]) => ({ ...acc, [clasificacion]: count }),
+        {}
+      );
+
+    res.send([
+      orderedAreaFrequency,
+      orderedCampoFrequency,
+      orderedClasificacionFrequency,
+    ]);
   } catch (error) {
     // Manejar errores
-    res.status(500).send({ error: 'Error al procesar la solicitud' });
+    res.status(500).send({ error: "Error al procesar la solicitud" });
   }
 };
-
 
 export const getDocumentsForArea = async (req, res) => {
   const area = req.query.search;
   const encodedSearch = encodeURIComponent(area);
   try {
     const documentsForArea = await Documents.find({
-      "Área": area,
+      Área: area,
     }).exec();
     res.send(documentsForArea);
   } catch (error) {
@@ -122,7 +152,7 @@ export const mapGetDocumentsForArea = async (req, res) => {
     { length: endYear - startYear + 1 },
     (_, index) => startYear + index
   );
-  
+
   try {
     const documentsForDecades = await Documents.find({
       ["Páis de la Publicación"]: mapElement,
@@ -150,7 +180,7 @@ export const getDocumentsForFieldStudy = async (req, res) => {
   const fieldStudy = req.query.search;
   try {
     const documentsForFieldStudy = await Documents.find({
-      "Campo" : fieldStudy,
+      Campo: fieldStudy,
     }).exec();
     res.send(documentsForFieldStudy);
   } catch (error) {
@@ -162,7 +192,7 @@ export const getDocumentsForDocumentType = async (req, res) => {
   const documentType = req.query.search;
   try {
     const documentsForDocumentType = await Documents.find({
-      ["Tipo de documento"] : documentType,
+      ["Tipo de documento"]: documentType,
     }).exec();
     res.send(documentsForDocumentType);
   } catch (error) {
@@ -174,7 +204,7 @@ export const getDocumentsForEditorial = async (req, res) => {
   const editorial = req.query.search;
   try {
     const documentsForEditorial = await Documents.find({
-      ["Libros/Editorial"] : editorial,
+      ["Libros/Editorial"]: editorial,
     }).exec();
     res.send(documentsForEditorial);
   } catch (error) {
@@ -186,7 +216,7 @@ export const getDocumentsForPais = async (req, res) => {
   const pais = req.query.search;
   try {
     const documentsForPais = await Documents.find({
-      ["País de la Publicación"] : pais,
+      ["País de la Publicación"]: pais,
     }).exec();
     res.send(documentsForPais);
   } catch (error) {
@@ -206,13 +236,11 @@ export const getDocumentsForMunicipio = async (req, res) => {
   }
 };
 
-
-
 export const getDocumentsForAuthor = async (req, res) => {
   const autor = req.query.search;
   try {
     const documentsForAuthor = await Documents.find({
-      ["Autores"] :autor,
+      ["Autores"]: autor,
     }).exec();
     res.send(documentsForAuthor);
   } catch (error) {
