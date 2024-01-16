@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: false, decode: (str) => decodeURIComponen
 const URL_CONNNECT = process.env.URL_CONNNECT
 export const PORT = process.env.PORT
 app.use(morgan("dev"));
-app.use(cors())
+app.use(cors());
 app.use("/api",documentsRoutes)
 app.use("/api",countriesRoutes)
 
