@@ -66,11 +66,52 @@ export const mapGetDocumentsForMunicipios = async (req, res) => {
     const documentsForMunicipio = await Documents.find({
       "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
+
+    // Ordenar por el campo "Año" de mayor a menor
+    documentsForMunicipio.sort((a, b) => {
+      // Manejar el caso de "S/I" moviéndolos al final
+      if (a.Año === "S/I" && b.Año !== "S/I") {
+        return 1;
+      } else if (a.Año !== "S/I" && b.Año === "S/I") {
+        return -1;
+      } else {
+        // Ordenar por "Año" de mayor a menor
+        return parseInt(b.Año) - parseInt(a.Año);
+      }
+    });
+
     res.send(documentsForMunicipio);
   } catch (error) {
     res.send(error);
   }
 };
+
+export const mapGetDocumentsForPais = async (req, res) => {
+  const pais = req.query.search;
+  try {
+    const documentsForPais = await Documents.find({
+      "País de la Publicación": { $regex: new RegExp(pais, "i") },
+    }).exec();
+
+    // Ordenar por el campo "Año" de mayor a menor
+    documentsForPais.sort((a, b) => {
+      // Manejar el caso de "S/I" moviéndolos al final
+      if (a.Año === "S/I" && b.Año !== "S/I") {
+        return 1;
+      } else if (a.Año !== "S/I" && b.Año === "S/I") {
+        return -1;
+      } else {
+        // Ordenar por "Año" de mayor a menor
+        return parseInt(b.Año) - parseInt(a.Año);
+      }
+    });
+
+    res.send(documentsForPais);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
 
 export const chartsGetDocumentsForMunicipios = async (req, res) => {
   const municipio = req.query.search;
@@ -98,6 +139,66 @@ export const chartsGetDocumentsForMunicipios = async (req, res) => {
     });
 
     documentsForMunicipios.forEach((document) => {
+      const clasificacion = document["Clasificación"];
+      if (clasificacion !== undefined) {
+        clasificacionFrecuency[clasificacion] = 
+          (clasificacionFrecuency[clasificacion] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedAreaFrequency = Object.entries(areaFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [area, count]) => ({ ...acc, [area]: count }), {});
+
+    const orderedCampoFrequency = Object.entries(campoFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [campo, count]) => ({ ...acc, [campo]: count }), {});
+
+    const orderedClasificacionFrequency = Object.entries(clasificacionFrecuency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [clasificacion, count]) => ({ ...acc, [clasificacion]: count }),
+        {}
+      );
+
+    res.send([
+      orderedAreaFrequency,
+      orderedCampoFrequency,
+      orderedClasificacionFrequency,
+    ]);
+  } catch (error) {
+    // Manejar errores
+    res.status(500).send({ error: "Error al procesar la solicitud" });
+  }
+};
+
+export const chartsGetDocumentsForPais = async (req, res) => {
+  const pais = req.query.search;
+  try {
+    const documentsForPais = await Documents.find({
+      "País de la Publicación": { $regex: new RegExp(pais, "i") },
+    }).exec();
+
+    const areaFrequency = {};
+    const campoFrequency = {};
+    const clasificacionFrecuency = {};
+
+    documentsForPais.forEach((document) => {
+      const area = document["Área"];
+      if (area !== undefined) {
+        areaFrequency[area] = (areaFrequency[area] || 0) + 1;
+      }
+    });
+
+    documentsForPais.forEach((document) => {
+      const campo = document["País de la Publicación"];
+      if (campo !== undefined) {
+        campoFrequency[campo] = (campoFrequency[campo] || 0) + 1;
+      }
+    });
+
+    documentsForPais.forEach((document) => {
       const clasificacion = document["Clasificación"];
       if (clasificacion !== undefined) {
         clasificacionFrecuency[clasificacion] = 
@@ -228,13 +329,28 @@ export const getDocumentsForMunicipio = async (req, res) => {
   const municipio = req.query.search;
   try {
     const documentsForMunicipio = await Documents.find({
-      "Municipios de estudio": { $regex: new RegExp(municipio, "i") }, // La "i" hace que la búsqueda sea insensible a mayúsculas y minúsculas
+      "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
+
+    // Ordenar por el campo "Año" de mayor a menor
+    documentsForMunicipio.sort((a, b) => {
+      // Manejar el caso de "S/I" moviéndolos al final
+      if (a.Año === "S/I" && b.Año !== "S/I") {
+        return 1;
+      } else if (a.Año !== "S/I" && b.Año === "S/I") {
+        return -1;
+      } else {
+        // Ordenar por "Año" de mayor a menor
+        return parseInt(b.Año) - parseInt(a.Año);
+      }
+    });
+
     res.send(documentsForMunicipio);
   } catch (error) {
     res.send(error);
   }
 };
+
 
 export const getDocumentsForAuthor = async (req, res) => {
   const autor = req.query.search;

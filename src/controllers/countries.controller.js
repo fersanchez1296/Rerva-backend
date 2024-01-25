@@ -15,28 +15,59 @@ export const getCountries = async (req, res) => {
 
 export const getCountriesWithCount = async (req, res) => {
   try {
-    const countriesWithCounts = await Documents.aggregate([
+    const paisesData = await Documents.aggregate([
+      {
+        $unwind: {
+          path: "$País de la Publicación",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $group: {
           _id: "$País de la Publicación",
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
-    const countries = countriesWithCounts.map((country) => ({
-      name_es: country._id,
+    const paises = paisesData.map((pais) => ({
+      name_es: pais._id
+        .split(",")
+        .map((pais) => pais.trim()), // Dividir por comas y eliminar espacios en blanco
+      count: pais.count,
     }));
 
-    const countriesCount = countriesWithCounts.map((country) => ({
-      name_es: country._id,
-      count: country.count
+    // Reorganizar el resultado para contar cada municipio por separado
+    const result = {};
+    paises.forEach((pais) => {
+      pais.name_es.forEach((m) => {
+        // Reemplazar "S/I" por "S-I"
+        const cleanedPais = m === "S/I" ? "S-I" : m;
+        
+        if (!result[cleanedPais]) {
+          result[cleanedPais] = 0;
+        }
+        result[cleanedPais] += pais.count;
+      });
+    });
+
+    // Convertir el resultado en el formato deseado
+    const finalResult = Object.entries(result).map(([pais, count]) => ({
+      name_es: pais,
+      count: count,
     }));
 
-    const YLabels = countriesCount.map((label) => label.name_es)
-    const XLabels = countriesCount.map((label) => label.count)
+    // Ordenar el resultado de mayor a menor según el recuento
+    finalResult.sort((a, b) => b.count - a.count);
 
-    res.send([countries,countriesCount,YLabels,XLabels]);
+    const country = Object.entries(result).map(([pais]) => ({
+      name_es: pais,
+    }));
+
+    const YLabels = finalResult.map((label) => label.name_es);
+    const XLabels = finalResult.map((label) => label.count);
+
+    res.send([country, finalResult, YLabels, XLabels]);
   } catch (error) {
     res.send(error);
   }
@@ -272,8 +303,8 @@ export const getMunicipios = async (req, res) => {
       count: count,
     }));
 
-    // Ordenar el resultado de menor a mayor según el recuento
-    finalResult.sort((a, b) => a.count - b.count);
+    // Ordenar el resultado de mayor a menor según el recuento
+    finalResult.sort((a, b) => b.count - a.count);
 
     const muni = Object.entries(result).map(([municipio]) => ({
       name_es: municipio,
@@ -287,6 +318,7 @@ export const getMunicipios = async (req, res) => {
     res.send(error);
   }
 };
+
 
 
 
