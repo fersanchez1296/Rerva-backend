@@ -1,7 +1,8 @@
 import express from "express";
 import morgan from "morgan";
 import documentsRoutes from "./routes/documents.routes.js";
-import countriesRoutes from './routes/countries.routes.js'
+import countriesRoutes from './routes/countries.routes.js';
+import autoresRoutes from "./routes/autores.routes.js";
 import cors from "cors"
 import 'dotenv/config'
 const app = express();
@@ -12,5 +13,6 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use("/api",documentsRoutes)
 app.use("/api",countriesRoutes)
+app.use("/api",autoresRoutes)
 
 export default app
