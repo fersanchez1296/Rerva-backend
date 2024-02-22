@@ -546,7 +546,58 @@ export const busquedaRevista = async (req, res) => {
     const resultados = await Documents.find({
       "Nombre de la revista/libro": { $regex: `(${busqueda})`, $options: "i" },
     });
-    res.send(resultados);
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
+
+
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+
+    resultados.forEach((insti) => {
+      const inst = insti["Área"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+   
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados : resultados,
+      tableTitle : clavesResultados,
+        dt: [
+          orderedPaisFrequency,
+          orderedInstitucionFrequency,
+          orderedAdsFrequency,
+        ],
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -559,7 +610,58 @@ export const busquedaArea = async (req, res) => {
     const resultados = await Documents.find({
       Área: { $regex: `(${busqueda})`, $options: "i" },
     });
-    res.send(resultados);
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
+
+
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+
+    resultados.forEach((insti) => {
+      const inst = insti["Campo"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+   
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados : resultados,
+      tableTitle : clavesResultados,
+        dt: [
+          orderedPaisFrequency,
+          orderedInstitucionFrequency,
+          orderedAdsFrequency,
+        ],
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -572,7 +674,58 @@ export const busquedaTipoDocumento = async (req, res) => {
     const resultados = await Documents.find({
       "Tipo de documento": { $regex: `(${busqueda})`, $options: "i" },
     });
-    res.send(resultados);
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
+
+
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+
+    resultados.forEach((insti) => {
+      const inst = insti["Área"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Campo"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+   
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados : resultados,
+      tableTitle : clavesResultados,
+        dt: [
+          orderedPaisFrequency,
+          orderedInstitucionFrequency,
+          orderedAdsFrequency,
+        ],
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -585,33 +738,58 @@ export const busquedaPais = async (req, res) => {
     const resultados = await Documents.find({
       "País de la Publicación": { $regex: `(${busqueda})`, $options: "i" },
     });
-    res.send(resultados);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
 
-export const busquedaEditorial = async (req, res) => {
-  const busqueda = req.query.search.replace(/\+/g, " ");
-  console.log(busqueda);
-  try {
-    const resultados = await Documents.find({
-      "Libros/Editorial": { $regex: `(${busqueda})`, $options: "i" },
-    });
-    res.send(resultados);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
 
-export const busquedaInstitucion = async (req, res) => {
-  const busqueda = req.query.search.replace(/\+/g, " ");
-  console.log(busqueda);
-  try {
-    const resultados = await Documents.find({
-      "Tesis/ Institución": { $regex: `(${busqueda})`, $options: "i" },
+    resultados.forEach((ps) => {
+      const pais = ps["Área"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
     });
-    res.send(resultados);
+
+
+    resultados.forEach((insti) => {
+      const inst = insti["Campo"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+   
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados : resultados,
+      tableTitle : clavesResultados,
+        dt: [
+          orderedPaisFrequency,
+          orderedInstitucionFrequency,
+          orderedAdsFrequency,
+        ],
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -623,359 +801,6 @@ export const chartsBusquedaAutor = async (req, res) => {
   try {
     const autores = await Autores.find({
       Autor: { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaArea = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Autores.find({
-      Autor: { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaGeneral = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Autores.find({
-      Autor: { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaTipoDocumento = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Autores.find({
-      Autor: { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaPais = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Autores.find({
-      "País de la Publicación": { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaEditorial = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Autores.find({
-      "País de la Publicación": { $regex: `(${autor})`, $options: "i" },
-    });
-    const paisFrequency = {};
-    const institucionFrequency = {};
-    const adsFrequency = {};
-
-    autores.forEach((ps) => {
-      const pais = ps["País"];
-      if (pais !== undefined) {
-        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
-      }
-    });
-
-    autores.forEach((insti) => {
-      const inst = insti["INST"];
-      if (inst !== undefined) {
-        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
-      }
-    });
-
-    autores.forEach((adsc) => {
-      const ads = adsc["ADS"];
-      if (ads !== undefined) {
-        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
-      }
-    });
-    console.log(adsFrequency);
-    // Ordenar las frecuencias de menor a mayor
-    const orderedPaisFrequency = Object.entries(paisFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
-
-    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
-        {}
-      );
-
-    const orderedAdsFrequency = Object.entries(adsFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
-
-    res.send([
-      orderedPaisFrequency,
-      orderedInstitucionFrequency,
-      orderedAdsFrequency,
-    ]);
-  } catch (error) {
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
-
-// TODO cambiar criterios de las gráficas
-export const chartsBusquedaInstitucion = async (req, res) => {
-  // const municipio = req.query.search;
-  const autor = req.query.search.replace(/\+/g, " ");
-  try {
-    const autores = await Documents.find({
-      "Tesis/ Institución": { $regex: `(${autor})`, $options: "i" },
     });
     const paisFrequency = {};
     const institucionFrequency = {};

@@ -18,21 +18,12 @@ import {
   mapGetDocumentsForPais,
   busquedaGeneral,
   busquedaAutores,
-  chartsBusquedaAutor,
-  chartsBusquedaGeneral,
   infoBusquedaSecciones,
   busquedaArea,
-  chartsBusquedaArea,
-  chartsBusquedaTipoDocumento,
   busquedaTipoDocumento,
-  chartsBusquedaPais,
   busquedaPais,
-  busquedaEditorial,
-  chartsBusquedaEditorial,
-  busquedaInstitucion,
-  chartsBusquedaInstitucion,
   busquedaRevista,
-  chartsBusquedaRevista
+
 } from "../controllers/documents.controller.js";
 
 const router = Router();
@@ -62,15 +53,6 @@ router.get("/busqueda/area-de-conocimiento", busquedaArea);
 router.get("/busqueda/revista", busquedaRevista);
 router.get("/busqueda/tipo-de-documento", busquedaTipoDocumento);
 router.get("/busqueda/pais-de-publicacion", busquedaPais);
-router.get("/busqueda/editorial", busquedaEditorial);
-router.get("/busqueda/institucion", busquedaInstitucion);
 router.get("/busqueda/seccionesSelect", infoBusquedaSecciones);
-router.get("/charts/busqueda/general", chartsBusquedaGeneral);
-router.get("/charts/busqueda/autor", chartsBusquedaAutor);
-router.get("/charts/busqueda/area-de-conocimiento", chartsBusquedaArea);
-router.get("/charts/busqueda/tipo-de-documento", chartsBusquedaTipoDocumento);
-router.get("/charts/busqueda/pais-de-publicacion", chartsBusquedaPais);
-router.get("/charts/busqueda/editorial", chartsBusquedaEditorial);
-router.get("/charts/busqueda/institucion", chartsBusquedaInstitucion);
-router.get("/charts/busqueda/revista", chartsBusquedaRevista);
+
 export default router;
