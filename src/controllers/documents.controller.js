@@ -65,24 +65,70 @@ export const mapGetDocumentsForDecades = async (req, res) => {
 export const mapGetDocumentsForMunicipios = async (req, res) => {
   const municipio = req.query.search;
   try {
-    const documentsForMunicipio = await Documents.find({
+    const resultados = await Documents.find({
       "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
 
-    // Ordenar por el campo "Año" de mayor a menor
-    documentsForMunicipio.sort((a, b) => {
+    resultados.sort((a, b) => {
       // Manejar el caso de "S/I" moviéndolos al final
       if (a.Año === "S/I" && b.Año !== "S/I") {
         return 1;
       } else if (a.Año !== "S/I" && b.Año === "S/I") {
         return -1;
       } else {
-        // Ordenar por "Año" de mayor a menor
         return parseInt(b.Año) - parseInt(a.Año);
       }
     });
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
 
-    res.send(documentsForMunicipio);
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((insti) => {
+      const inst = insti["Campo"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
+    });
   } catch (error) {
     res.send(error);
   }
@@ -91,12 +137,12 @@ export const mapGetDocumentsForMunicipios = async (req, res) => {
 export const mapGetDocumentsForPais = async (req, res) => {
   const pais = req.query.search;
   try {
-    const documentsForPais = await Documents.find({
+    const resultados = await Documents.find({
       "País de la Publicación": { $regex: new RegExp(pais, "i") },
     }).exec();
 
     // Ordenar por el campo "Año" de mayor a menor
-    documentsForPais.sort((a, b) => {
+    resultados.sort((a, b) => {
       // Manejar el caso de "S/I" moviéndolos al final
       if (a.Año === "S/I" && b.Año !== "S/I") {
         return 1;
@@ -107,72 +153,62 @@ export const mapGetDocumentsForPais = async (req, res) => {
         return parseInt(b.Año) - parseInt(a.Año);
       }
     });
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
 
-    res.send(documentsForPais);
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((insti) => {
+      const inst = insti["Campo"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
+    });
   } catch (error) {
     res.send(error);
   }
 };
 
-export const chartsGetDocumentsForMunicipios = async (req, res) => {
-  const municipio = req.query.search;
-  try {
-    const documentsForMunicipios = await Documents.find({
-      "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
-    }).exec();
 
-    const areaFrequency = {};
-    const campoFrequency = {};
-    const clasificacionFrecuency = {};
-
-    documentsForMunicipios.forEach((document) => {
-      const area = document["Área"];
-      if (area !== undefined) {
-        areaFrequency[area] = (areaFrequency[area] || 0) + 1;
-      }
-    });
-
-    documentsForMunicipios.forEach((document) => {
-      const campo = document["País de la Publicación"];
-      if (campo !== undefined) {
-        campoFrequency[campo] = (campoFrequency[campo] || 0) + 1;
-      }
-    });
-
-    documentsForMunicipios.forEach((document) => {
-      const clasificacion = document["Clasificación"];
-      if (clasificacion !== undefined) {
-        clasificacionFrecuency[clasificacion] =
-          (clasificacionFrecuency[clasificacion] || 0) + 1;
-      }
-    });
-
-    // Ordenar las frecuencias de menor a mayor
-    const orderedAreaFrequency = Object.entries(areaFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [area, count]) => ({ ...acc, [area]: count }), {});
-
-    const orderedCampoFrequency = Object.entries(campoFrequency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce((acc, [campo, count]) => ({ ...acc, [campo]: count }), {});
-
-    const orderedClasificacionFrequency = Object.entries(clasificacionFrecuency)
-      .sort(([, aCount], [, bCount]) => aCount - bCount)
-      .reduce(
-        (acc, [clasificacion, count]) => ({ ...acc, [clasificacion]: count }),
-        {}
-      );
-
-    res.send([
-      orderedAreaFrequency,
-      orderedCampoFrequency,
-      orderedClasificacionFrequency,
-    ]);
-  } catch (error) {
-    // Manejar errores
-    res.status(500).send({ error: "Error al procesar la solicitud" });
-  }
-};
 
 export const chartsGetDocumentsForPais = async (req, res) => {
   const pais = req.query.search;
@@ -316,10 +352,59 @@ export const getDocumentsForEditorial = async (req, res) => {
 export const getDocumentsForPais = async (req, res) => {
   const pais = req.query.search;
   try {
-    const documentsForPais = await Documents.find({
+    const resultados = await Documents.find({
       ["País de la Publicación"]: pais,
     }).exec();
-    res.send(documentsForPais);
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
+
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((insti) => {
+      const inst = insti["Campo"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
+    });
   } catch (error) {
     res.send(error);
   }
@@ -328,12 +413,12 @@ export const getDocumentsForPais = async (req, res) => {
 export const getDocumentsForMunicipio = async (req, res) => {
   const municipio = req.query.search;
   try {
-    const documentsForMunicipio = await Documents.find({
+    const resultados = await Documents.find({
       "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
 
     // Ordenar por el campo "Año" de mayor a menor
-    documentsForMunicipio.sort((a, b) => {
+    resultados.sort((a, b) => {
       // Manejar el caso de "S/I" moviéndolos al final
       if (a.Año === "S/I" && b.Año !== "S/I") {
         return 1;
@@ -344,8 +429,56 @@ export const getDocumentsForMunicipio = async (req, res) => {
         return parseInt(b.Año) - parseInt(a.Año);
       }
     });
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const clavesResultados = Object.keys(resultados[0]._doc);
 
-    res.send(documentsForMunicipio);
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((insti) => {
+      const inst = insti["Área"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
+    });
   } catch (error) {
     res.send(error);
   }
@@ -421,14 +554,13 @@ export const busquedaGeneral = async (req, res) => {
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    
+
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["Área"];
@@ -443,7 +575,7 @@ export const busquedaGeneral = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -460,16 +592,16 @@ export const busquedaGeneral = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -486,14 +618,12 @@ export const busquedaAutores = async (req, res) => {
     const adsFrequency = {};
     const clavesResultados = Object.keys(resultados[0]._doc);
 
-
     resultados.forEach((ps) => {
       const pais = ps["País"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["INST"];
@@ -508,7 +638,7 @@ export const busquedaAutores = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -525,13 +655,13 @@ export const busquedaAutores = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
     console.log(error);
@@ -551,14 +681,12 @@ export const busquedaRevista = async (req, res) => {
     const adsFrequency = {};
     const clavesResultados = Object.keys(resultados[0]._doc);
 
-
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["Área"];
@@ -573,7 +701,7 @@ export const busquedaRevista = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -590,13 +718,13 @@ export const busquedaRevista = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
     res.status(500).send(error);
@@ -615,14 +743,12 @@ export const busquedaArea = async (req, res) => {
     const adsFrequency = {};
     const clavesResultados = Object.keys(resultados[0]._doc);
 
-
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["Campo"];
@@ -637,7 +763,7 @@ export const busquedaArea = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -654,13 +780,13 @@ export const busquedaArea = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
     res.status(500).send(error);
@@ -679,14 +805,12 @@ export const busquedaTipoDocumento = async (req, res) => {
     const adsFrequency = {};
     const clavesResultados = Object.keys(resultados[0]._doc);
 
-
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["Área"];
@@ -701,7 +825,7 @@ export const busquedaTipoDocumento = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -718,13 +842,13 @@ export const busquedaTipoDocumento = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
     res.status(500).send(error);
@@ -743,14 +867,12 @@ export const busquedaPais = async (req, res) => {
     const adsFrequency = {};
     const clavesResultados = Object.keys(resultados[0]._doc);
 
-
     resultados.forEach((ps) => {
       const pais = ps["Área"];
       if (pais !== undefined) {
         paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
       }
     });
-
 
     resultados.forEach((insti) => {
       const inst = insti["Campo"];
@@ -765,7 +887,7 @@ export const busquedaPais = async (req, res) => {
         adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
       }
     });
-   
+
     // Ordenar las frecuencias de menor a mayor
     const orderedPaisFrequency = Object.entries(paisFrequency)
       .sort(([, aCount], [, bCount]) => aCount - bCount)
@@ -782,13 +904,13 @@ export const busquedaPais = async (req, res) => {
       .sort(([, aCount], [, bCount]) => aCount - bCount)
       .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
     res.send({
-      resultados : resultados,
-      tableTitle : clavesResultados,
-        dt: [
-          orderedPaisFrequency,
-          orderedInstitucionFrequency,
-          orderedAdsFrequency,
-        ],
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
     });
   } catch (error) {
     res.status(500).send(error);
