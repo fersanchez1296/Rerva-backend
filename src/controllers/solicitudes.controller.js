@@ -44,7 +44,7 @@ export const postSolicitud = async (req, res) => {
       Email: req.body.Email,
       Link: req.body.Link,
       ApprovalStatus: "PENDIENTE",
-      DocumentStatus: "ACTIVA",
+      DocumentStatus: "Activa",
       CreatedAt: new Date(),
     });
     const result = await nuevaSolicitud.save();
