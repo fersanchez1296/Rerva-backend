@@ -20,6 +20,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "normalize": "^0.3.1",
-    "normalize-strings": "^1.1.1"
+    "normalize-strings": "^1.1.1",
+    "socket.io": "^4.7.4"
   }
 }

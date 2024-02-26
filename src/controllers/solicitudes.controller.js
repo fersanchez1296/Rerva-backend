@@ -1,17 +1,36 @@
 import Solicitudes from "../models/solicitudes.model.js";
 import mongoose from "mongoose";
+import { io } from "../app.js";
 const { ObjectId } = mongoose.Types;
 
 export const getSolicitudes = async (req, res) => {
   try {
-    const resultados = await Solicitudes.find({ DocumentStatus: 'Activa' }).lean();
+    const resultados = await Solicitudes.find({
+      DocumentStatus: "Activa",
+    }).lean();
+
+    // Responde al cliente HTTP con los resultados
     res.send(resultados);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Error al obtener solicitudes", error: error.message });
+    // Si hay un error, responde con un mensaje de error
+    res.status(500).send({ message: "Error al obtener solicitudes", error: error.message });
   }
 };
+
+io.on("connection", (socket) => {
+  console.log("Nuevo cliente conectado");
+  socket.on("actualizarDatos", async () => {
+    try {
+      const resultados = await Solicitudes.find({
+        DocumentStatus: "Activa",
+      }).lean();
+      // Emite los resultados actualizados a todos los clientes conectados
+      io.emit("datosActualizados", resultados);
+    } catch (error) {
+      console.error("Error al actualizar datos:", error);
+    }
+  });
+});
 
 export const updateSolicitud = async (req, res) => {
   try {
@@ -52,13 +71,11 @@ export const postSolicitud = async (req, res) => {
       return res
         .status(404)
         .json({ message: "No Pudimos Registrar tu solicitud", status: 500 });
-    res
-      .status(200)
-      .json({
-        message:
-          "¡Gracias por contribuir con nosotros! Pronto estaŕemos en contacto contigo.",
-        status: 200,
-      },);
+    res.status(200).json({
+      message:
+        "¡Gracias por contribuir con nosotros! Pronto estaŕemos en contacto contigo.",
+      status: 200,
+    });
   } catch (error) {
     console.log(error);
     res.send(error);
