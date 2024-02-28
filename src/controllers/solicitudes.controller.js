@@ -3,28 +3,11 @@ import Solicitudes from "../models/solicitudes.model.js";
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 
-const socketUpdateData = () => {
-  io.on("connection", (socket) => {
-    console.log("Conectado al Socket");
-    socket.on("actualizarDatos", async () => {
-      try {
-        const resultados = await Solicitudes.find({
-          DocumentStatus: "Activa",
-        }).lean();
-        io.emit("datosActualizados", resultados);
-      } catch (error) {
-        console.error("Error al actualizar datos:", error);
-      }
-    });
-  });
-};
-
 export const getSolicitudes = async (req, res) => {
   try {
     const resultados = await Solicitudes.find({
       DocumentStatus: "Activa",
     }).lean();
-    socketUpdateData();
     res.send(resultados);
   } catch (error) {
     // Si hay un error, responde con un mensaje de error
@@ -43,6 +26,7 @@ export const updateSolicitud = async (req, res) => {
         ApprovalStatus: req.body.ApprovalStatus,
         DocumentStatus: req.body.DocumentStatus,
         EndedAt: req.body.EndedAt,
+        Notas: req.body.Notas,
       }
     );
 
@@ -58,6 +42,8 @@ export const updateSolicitud = async (req, res) => {
 
 export const postSolicitud = async (req, res) => {
   console.log(req.body);
+  const fechaActual = new Date();
+  const horaLocal = fechaActual.toLocaleString();
   try {
     const nuevaSolicitud = new Solicitudes({
       Autor: req.body.Autor,
@@ -66,7 +52,8 @@ export const postSolicitud = async (req, res) => {
       Link: req.body.Link,
       ApprovalStatus: "PENDIENTE",
       DocumentStatus: "Activa",
-      CreatedAt: new Date(),
+      Notas: "",
+      CreatedAt: horaLocal,
     });
     const result = await nuevaSolicitud.save();
     if (!result)

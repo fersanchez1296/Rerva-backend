@@ -42,6 +42,11 @@ const solicitudesSchema = mongoose.Schema(
         return new Date("2000-01-01T06:00:00.000+00:00");
       }
     },
+    Notas: {
+      type: String,
+      required: true,
+      trim: true,
+    }
   },
   {
     timesStampes: true,
