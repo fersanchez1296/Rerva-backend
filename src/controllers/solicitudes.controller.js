@@ -1,36 +1,38 @@
+import { io } from "../app.js";
 import Solicitudes from "../models/solicitudes.model.js";
 import mongoose from "mongoose";
-import { io } from "../app.js";
 const { ObjectId } = mongoose.Types;
+
+const socketUpdateData = () => {
+  io.on("connection", (socket) => {
+    console.log("Conectado al Socket");
+    socket.on("actualizarDatos", async () => {
+      try {
+        const resultados = await Solicitudes.find({
+          DocumentStatus: "Activa",
+        }).lean();
+        io.emit("datosActualizados", resultados);
+      } catch (error) {
+        console.error("Error al actualizar datos:", error);
+      }
+    });
+  });
+};
 
 export const getSolicitudes = async (req, res) => {
   try {
     const resultados = await Solicitudes.find({
       DocumentStatus: "Activa",
     }).lean();
-
-    // Responde al cliente HTTP con los resultados
+    socketUpdateData();
     res.send(resultados);
   } catch (error) {
     // Si hay un error, responde con un mensaje de error
-    res.status(500).send({ message: "Error al obtener solicitudes", error: error.message });
+    res
+      .status(500)
+      .send({ message: "Error al obtener solicitudes", error: error.message });
   }
 };
-
-io.on("connection", (socket) => {
-  console.log("Nuevo cliente conectado");
-  socket.on("actualizarDatos", async () => {
-    try {
-      const resultados = await Solicitudes.find({
-        DocumentStatus: "Activa",
-      }).lean();
-      // Emite los resultados actualizados a todos los clientes conectados
-      io.emit("datosActualizados", resultados);
-    } catch (error) {
-      console.error("Error al actualizar datos:", error);
-    }
-  });
-});
 
 export const updateSolicitud = async (req, res) => {
   try {
