@@ -844,7 +844,7 @@ export const busquedaRevistaDocumentos = async (req,res) => {
       ],
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({message : "No hay coincidencias en la base de datos."});
   }
 }
 
