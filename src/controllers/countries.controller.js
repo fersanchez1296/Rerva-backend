@@ -276,6 +276,11 @@ export const getMunicipios = async (req, res) => {
       },
     ]);
 
+    const resultadosFiltrados = municipiosData.map((item) => ({
+      "País de la Publicación": item["País de la Publicación"],
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
+
     const municipios = municipiosData.map((municipio) => ({
       name_es: municipio._id
         .split(",")

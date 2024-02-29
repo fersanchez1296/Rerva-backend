@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   getDocuments,
   postDocument,
-  getDocumentsForDecades,
   getDocumentsForArea,
   getDocumentsForDiscipline,
   getDocumentsForFieldStudy,
@@ -11,10 +10,6 @@ import {
   getDocumentsForPais,
   getDocumentsForAuthor,
   getDocumentsForMunicipio,
-  mapGetDocumentsForDecades,
-  mapGetDocumentsForMunicipios,
-  chartsGetDocumentsForPais,
-  mapGetDocumentsForPais,
   busquedaGeneral,
   busquedaAutores,
   infoBusquedaSecciones,
@@ -22,6 +17,7 @@ import {
   busquedaTipoDocumento,
   busquedaPais,
   busquedaRevista,
+  busquedaRevistaDocumentos,
 
 } from "../controllers/documents.controller.js";
 
@@ -43,6 +39,7 @@ router.get("/busqueda/general", busquedaGeneral);
 router.get("/busqueda/autor", busquedaAutores);
 router.get("/busqueda/area-de-conocimiento", busquedaArea);
 router.get("/busqueda/revista", busquedaRevista);
+router.get("/revista/documentos", busquedaRevistaDocumentos);
 router.get("/busqueda/tipo-de-documento", busquedaTipoDocumento);
 router.get("/busqueda/pais-de-publicacion", busquedaPais);
 router.get("/busqueda/seccionesSelect", infoBusquedaSecciones);

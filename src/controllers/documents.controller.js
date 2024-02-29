@@ -208,15 +208,13 @@ export const mapGetDocumentsForPais = async (req, res) => {
   }
 };
 
-
-
 export const chartsGetDocumentsForPais = async (req, res) => {
   const pais = req.query.search;
   try {
     const documentsForPais = await Documents.find({
       "País de la Publicación": { $regex: new RegExp(pais, "i") },
     }).exec();
-
+    
     const areaFrequency = {};
     const campoFrequency = {};
     const clasificacionFrecuency = {};
@@ -358,7 +356,16 @@ export const getDocumentsForPais = async (req, res) => {
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Nombre de la revista/libro": item["Nombre de la revista/libro"],
+      Título: item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "Tipo de autoría": item["Tipo de autoría"],
+      Autores: item.Autores,
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
 
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
@@ -417,7 +424,6 @@ export const getDocumentsForMunicipio = async (req, res) => {
       "Municipios de estudio": { $regex: new RegExp(municipio, "i") },
     }).exec();
 
-    // Ordenar por el campo "Año" de mayor a menor
     resultados.sort((a, b) => {
       // Manejar el caso de "S/I" moviéndolos al final
       if (a.Año === "S/I" && b.Año !== "S/I") {
@@ -432,7 +438,17 @@ export const getDocumentsForMunicipio = async (req, res) => {
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Nombre de la revista/libro": item["Nombre de la revista/libro"],
+      Título: item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "Tipo de autoría": item["Tipo de autoría"],
+      Autores: item.Autores,
+      "País de la Publicación": item["País de la Publicación"],
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
 
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
@@ -550,7 +566,18 @@ export const busquedaGeneral = async (req, res) => {
         },
       ],
     });
-    const clavesResultados = Object.keys(resultados[0]._doc);
+
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Nombre de la revista/libro": item["Nombre de la revista/libro"],
+      Título: item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "Tipo de autoría": item["Tipo de autoría"],
+      Autores: item.Autores,
+      "País de la Publicación": item["País de la Publicación"],
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
@@ -613,10 +640,13 @@ export const busquedaAutores = async (req, res) => {
     const resultados = await Autores.find({
       Autor: { $regex: `(${busqueda})`, $options: "i" },
     });
+    const resultadosFiltrados = resultados.map((item) => ({
+      Autor: item.Autores,
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
 
     resultados.forEach((ps) => {
       const pais = ps["País"];
@@ -675,11 +705,98 @@ export const busquedaRevista = async (req, res) => {
   try {
     const resultados = await Documents.find({
       "Nombre de la revista/libro": { $regex: `(${busqueda})`, $options: "i" },
+    }).sort({ "Nombre de la revista/libro": 1 });
+
+    
+    const resultSelectDistinct = resultados.filter(
+      (resultado, index, self) =>
+        index ===
+        self.findIndex(
+          (r) =>
+            r["Nombre de la revista/libro"] ===
+            resultado["Nombre de la revista/libro"]
+        )
+    );
+    const paisFrequency = {};
+    const institucionFrequency = {};
+    const adsFrequency = {};
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Nombre de la revista/libro": item["Nombre de la revista/libro"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "País de la Publicación": item["País de la Publicación"],
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
+
+    resultados.forEach((ps) => {
+      const pais = ps["País de la Publicación"];
+      if (pais !== undefined) {
+        paisFrequency[pais] = (paisFrequency[pais] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((insti) => {
+      const inst = insti["Área"];
+      if (inst !== undefined) {
+        institucionFrequency[inst] = (institucionFrequency[inst] || 0) + 1;
+      }
+    });
+
+    resultados.forEach((adsc) => {
+      const ads = adsc["Tipo de documento"];
+      if (ads !== undefined) {
+        adsFrequency[ads] = (adsFrequency[ads] || 0) + 1;
+      }
+    });
+
+    // Ordenar las frecuencias de menor a mayor
+    const orderedPaisFrequency = Object.entries(paisFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [pais, count]) => ({ ...acc, [pais]: count }), {});
+
+    const orderedInstitucionFrequency = Object.entries(institucionFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce(
+        (acc, [institucion, count]) => ({ ...acc, [institucion]: count }),
+        {}
+      );
+
+    const orderedAdsFrequency = Object.entries(adsFrequency)
+      .sort(([, aCount], [, bCount]) => aCount - bCount)
+      .reduce((acc, [ads, count]) => ({ ...acc, [ads]: count }), {});
+    res.send({
+      resultados: resultSelectDistinct,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedInstitucionFrequency,
+        orderedAdsFrequency,
+      ],
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+export const busquedaRevistaDocumentos = async (req,res) => {
+  const busqueda = req.query.search.replace(/\+/g, " ");
+
+  try {
+    const resultados = await Documents.find({
+      "Nombre de la revista/libro": { $regex: `(${busqueda})`, $options: "i" },
     });
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Título": item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "País de la Publicación": item["País de la Publicación"],
+      Autores: item.Autores,
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
 
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
@@ -729,7 +846,7 @@ export const busquedaRevista = async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-};
+}
 
 export const busquedaArea = async (req, res) => {
   const busqueda = req.query.search.replace(/\+/g, " ");
@@ -741,7 +858,16 @@ export const busquedaArea = async (req, res) => {
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Nombre de la revista/libro" : item["Nombre de la revista/libro"],
+      "Título": item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      "País de la Publicación": item["País de la Publicación"],
+      Autores: item.Autores,
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
 
     resultados.forEach((ps) => {
       const pais = ps["País de la Publicación"];
@@ -865,7 +991,15 @@ export const busquedaPais = async (req, res) => {
     const paisFrequency = {};
     const institucionFrequency = {};
     const adsFrequency = {};
-    const clavesResultados = Object.keys(resultados[0]._doc);
+    const resultadosFiltrados = resultados.map((item) => ({
+      "Link de acceso" : item["Link de acceso"],
+      "Nombre de la revista/libro" : item["Nombre de la revista/libro"],
+      "Título": item["Título"],
+      Idioma: item.Idioma,
+      Año: item["Año"],
+      Autores: item.Autores,
+    }));
+    const clavesResultados = Object.keys(resultadosFiltrados[0]);
 
     resultados.forEach((ps) => {
       const pais = ps["Área"];
