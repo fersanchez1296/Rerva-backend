@@ -1195,16 +1195,6 @@ export const infoBusquedaSecciones = async (req, res) => {
     });
     const orderedAreas = Array.from(areasSet).sort();
 
-    // Obtener tipos de documento únicos y ordenarlos alfabéticamente
-    const tiposDocumentoSet = new Set();
-    allDocuments.forEach((document) => {
-      const tipoDocumento = document["Tipo de documento"];
-      if (tipoDocumento) {
-        tiposDocumentoSet.add(tipoDocumento);
-      }
-    });
-    const orderedTiposDocumento = Array.from(tiposDocumentoSet).sort();
-
     // Obtener países únicos y ordenarlos alfabéticamente
     const paisesSet = new Set();
     allDocuments.forEach((document) => {
@@ -1216,25 +1206,6 @@ export const infoBusquedaSecciones = async (req, res) => {
     const orderedPaises = Array.from(paisesSet).sort();
     const totalPaises = paisesSet.size;
 
-    // Obtener editoriales únicas y ordenarlos alfabéticamente
-    const editorialSet = new Set();
-    allDocuments.forEach((document) => {
-      const editorial = document["Libros/Editorial"];
-      if (editorial) {
-        editorialSet.add(editorial);
-      }
-    });
-    const orderedEditorial = Array.from(editorialSet).sort();
-
-    // Obtener instituciones únicas y ordenarlos alfabéticamente
-    const instiSet = new Set();
-    allDocuments.forEach((document) => {
-      const insti = document["Tesis/ Institución"];
-      if (insti) {
-        instiSet.add(insti);
-      }
-    });
-    const orderedInsti = Array.from(instiSet).sort();
 
     // Construir el objeto de respuesta en el formato deseado
     const areasResponse = orderedAreas.map((area, index) => ({
@@ -1242,24 +1213,9 @@ export const infoBusquedaSecciones = async (req, res) => {
       label: area,
     }));
 
-    const tiposDocumentoResponse = orderedTiposDocumento.map((tipo, index) => ({
-      value: (index + 1).toString(),
-      label: tipo,
-    }));
-
     const paisesResponse = orderedPaises.map((pais, index) => ({
       value: (index + 1).toString(),
       label: pais,
-    }));
-
-    const editorialResponse = orderedEditorial.map((editorial, index) => ({
-      value: (index + 1).toString(),
-      label: editorial,
-    }));
-
-    const instiResponse = orderedInsti.map((institucion, index) => ({
-      value: (index + 1).toString(),
-      label: institucion,
     }));
 
     const indicadores = [
@@ -1274,10 +1230,7 @@ export const infoBusquedaSecciones = async (req, res) => {
     res.send({
       indicadores: indicadores,
       areas: areasResponse,
-      tipos: tiposDocumentoResponse,
       paises: paisesResponse,
-      editoriales: editorialResponse,
-      instituciones: instiResponse,
     });
   } catch (error) {
     // Manejar errores
