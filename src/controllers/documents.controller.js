@@ -1169,45 +1169,20 @@ export const chartsBusquedaRevista = async (req, res) => {
 
 export const infoBusquedaSecciones = async (req, res) => {
   try {
-    const allDocuments = await Documents.find({}).exec();
-    const allAutores = await Autores.find({}).exec();
+    const [totalDocumentos, totalAutores] = await Promise.all([
+      Documents.countDocuments(),
+      Autores.countDocuments()
+    ]);
 
-    const totalDocumentos = allDocuments.length;
-    const totalAutores = allAutores.length;
+    const distinctRevistas = await Documents.distinct("Nombre de la revista/libro");
+    const distinctAreas = await Documents.distinct("Área");
+    const distinctPaises = await Documents.distinct("País de la Publicación");
 
-    // Obtener conteo de revistas únicas
-    const revistasSet = new Set();
-    allDocuments.forEach((document) => {
-      const revista = document["Nombre de la revista/libro"];
-      if (revista) {
-        revistasSet.add(revista);
-      }
-    });
-    const totalRevistas = revistasSet.size;
+    const totalRevistas = distinctRevistas.length;
+    const orderedAreas = distinctAreas.sort();
+    const orderedPaises = distinctPaises.sort();
+    const totalPaises = distinctPaises.length;
 
-    // Obtener áreas únicas y ordenarlas alfabéticamente
-    const areasSet = new Set();
-    allDocuments.forEach((document) => {
-      const area = document["Área"];
-      if (area) {
-        areasSet.add(area);
-      }
-    });
-    const orderedAreas = Array.from(areasSet).sort();
-
-    // Obtener países únicos y ordenarlos alfabéticamente
-    const paisesSet = new Set();
-    allDocuments.forEach((document) => {
-      const pais = document["País de la Publicación"];
-      if (pais) {
-        paisesSet.add(pais);
-      }
-    });
-    const orderedPaises = Array.from(paisesSet).sort();
-    const totalPaises = paisesSet.size;
-
-
-    // Construir el objeto de respuesta en el formato deseado
     const areasResponse = orderedAreas.map((area, index) => ({
       value: (index + 1).toString(),
       label: area,
@@ -1218,14 +1193,12 @@ export const infoBusquedaSecciones = async (req, res) => {
       label: pais,
     }));
 
-    const indicadores = [
-      {
-        documentos: totalDocumentos,
-        revistas: totalRevistas,
-        paises: totalPaises,
-        autores: totalAutores,
-      },
-    ];
+    const indicadores = [{
+      documentos: totalDocumentos,
+      revistas: totalRevistas,
+      paises: totalPaises,
+      autores: totalAutores,
+    }];
 
     res.send({
       indicadores: indicadores,
@@ -1233,7 +1206,8 @@ export const infoBusquedaSecciones = async (req, res) => {
       paises: paisesResponse,
     });
   } catch (error) {
-    // Manejar errores
     res.status(500).send({ error: "Error al procesar la solicitud" });
   }
 };
+
+
