@@ -1,5 +1,5 @@
 import Documents from "../models/document.model.js";
-import Solicitudes from "../models/solicitudes.model.js"
+import Solicitudes from "../models/solicitudes.model.js";
 export const getDocuments = async (req, res) => {
   try {
     const result = await Documents.find();
@@ -18,4 +18,18 @@ export const getHistorial = async (req, res) => {
   } catch (error) {
     res.send(error);
   }
-}
+};
+
+export const getBusqueda = async (req, res) => {
+  console.log(req.body);
+  try {
+    const nuevaSolicitud = new Solicitudes({
+      Autor: req.body.Autor,
+      Título: req.body["Título"],
+      DOI: req.body.DOI,
+    });
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
