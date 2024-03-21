@@ -50,6 +50,7 @@ export const postSolicitud = async (req, res) => {
       Título: req.body["Título"],
       Email: req.body.Email,
       Link: req.body.Link,
+      DOI: req.body.DOI,
       ApprovalStatus: "PENDIENTE",
       DocumentStatus: "Activa",
       Notas: "",

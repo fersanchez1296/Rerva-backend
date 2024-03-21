@@ -19,6 +19,11 @@ const solicitudesSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    DOI: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     ApprovalStatus: {
       type: String,
       required: true,
