@@ -21,13 +21,28 @@ export const getHistorial = async (req, res) => {
 };
 
 export const getBusqueda = async (req, res) => {
-  console.log(req.body);
   try {
-    const nuevaSolicitud = new Solicitudes({
-      Autor: req.body.Autor,
-      Título: req.body["Título"],
-      DOI: req.body.DOI,
+    const resultados = await Documents.find({
+      $or: [
+        { Título: { $regex: req.body.busqueda, $options: "i" } },
+        { Autores: { $regex: req.body.busqueda, $options: "i" } },
+        { DOI: { $regex: req.body.busqueda, $options: "i" } },
+      ],
     });
+    if (Array.isArray(resultados) && resultados.length > 0) {
+      res
+        .status(200)
+        .json({
+          message: "Encontramos resultados en la base de datos",
+          status: 200,
+          result: resultados,
+        });
+    } else {
+      res.json({
+        message: "No hay información para esta búsqueda",
+        status: 404,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.send(error);

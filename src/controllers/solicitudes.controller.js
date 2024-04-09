@@ -43,13 +43,13 @@ export const updateSolicitud = async (req, res) => {
 export const postSolicitud = async (req, res) => {
   console.log(req.body);
   const fechaActual = new Date();
-  const horaLocal = fechaActual.toLocaleString();
+  const horaLocal = fechaActual.toISOString();
   try {
     const nuevaSolicitud = new Solicitudes({
       Autor: req.body.Autor,
       Título: req.body["Título"],
       Email: req.body.Email,
-      Link: req.body.Link,
+      Link: req.body.Link ? req.body.Link : "",
       DOI: req.body.DOI,
       ApprovalStatus: "PENDIENTE",
       DocumentStatus: "Activa",

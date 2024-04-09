@@ -16,12 +16,12 @@ const solicitudesSchema = mongoose.Schema(
     },
     Link: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     DOI: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     ApprovalStatus: {
@@ -49,7 +49,7 @@ const solicitudesSchema = mongoose.Schema(
     },
     Notas: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     }
   },
