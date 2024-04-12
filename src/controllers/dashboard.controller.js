@@ -12,7 +12,7 @@ export const getDocuments = async (req, res) => {
 export const getHistorial = async (req, res) => {
   try {
     const resultados = await Solicitudes.find({
-      DocumentStatus: "Finalizada",
+      DocumentStatus: "FINALIZADA",
     }).lean();
     res.send(resultados);
   } catch (error) {

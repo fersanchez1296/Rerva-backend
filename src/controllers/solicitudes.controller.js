@@ -18,15 +18,17 @@ export const getSolicitudes = async (req, res) => {
 };
 
 export const updateSolicitud = async (req, res) => {
+  const fechaActual = new Date();
+  const horaLocal = fechaActual.toISOString();
   try {
-    console.log(req.body);
+    console.log(req.body.solicitud);
     const result = await Solicitudes.findByIdAndUpdate(
       { _id: req.params.id },
       {
-        ApprovalStatus: req.body.ApprovalStatus,
-        DocumentStatus: req.body.DocumentStatus,
-        EndedAt: req.body.EndedAt,
-        Notas: req.body.Notas,
+        ApprovalStatus: req.body.solicitud.Asunto,
+        DocumentStatus: "FINALIZADA",
+        EndedAt: horaLocal,
+        Notas: req.body.solicitud.Notas,
       }
     );
 
