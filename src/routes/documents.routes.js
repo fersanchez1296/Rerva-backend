@@ -1,47 +1,29 @@
 import { Router } from "express";
 import {
-  getDocuments,
-  postDocument,
-  getDocumentsForArea,
-  getDocumentsForDiscipline,
-  getDocumentsForFieldStudy,
-  getDocumentsForDocumentType,
-  getDocumentsForEditorial,
-  getDocumentsForPais,
-  getDocumentsForAuthor,
-  getDocumentsForMunicipio,
-  busquedaGeneral,
-  busquedaAutores,
-  infoBusquedaSecciones,
-  busquedaArea,
-  busquedaTipoDocumento,
-  busquedaPais,
-  busquedaRevista,
-  busquedaRevistaDocumentos,
+  busqueda_paises,
+  busqueda_municipios,
+  busqueda_general,
+  busqueda_autores,
+  secciones_busqueda,
+  busqueda_areas,
+  busqueda_revistas,
+  busqueda_documentos_revistas,
+  graficos_municipios,
+  graficos_paises
 
 } from "../controllers/documents.controller.js";
 
 const router = Router();
+router.get("/secciones-busqueda", secciones_busqueda);
+router.get("/graficos/municipios", graficos_municipios);
+router.get("/graficos/paises", graficos_paises);
+router.get("/busqueda/general", busqueda_general);
+router.get("/busqueda/municipio", busqueda_municipios);
+router.get("/busqueda/autor", busqueda_autores);
+router.get("/busqueda/area-de-conocimiento", busqueda_areas);
+router.get("/busqueda/revista", busqueda_revistas);
+router.get("/busqueda/documentos-revista", busqueda_documentos_revistas);
+router.get("/busqueda/pais-de-publicacion", busqueda_paises);
 
-router.get("/documents", getDocuments);
-
-router.get("/Publicaciones-por-areas", getDocumentsForArea);
-router.get("/Publicaciones-por-disciplina", getDocumentsForDiscipline);
-router.get("/Publicaciones-por-campo-de-estudio", getDocumentsForFieldStudy);
-router.get("/Publicaciones-por-tipo-de-documento", getDocumentsForDocumentType);
-router.get("/Publicaciones-por-editorial", getDocumentsForEditorial);
-router.get("/Publicaciones-por-pais", getDocumentsForPais);
-router.get("/Publicaciones-por-municipio", getDocumentsForMunicipio);
-router.get("/Publicaciones-por-autor", getDocumentsForAuthor);
-router.post("/newDocument", postDocument);
-// *********************************************
-router.get("/busqueda/general", busquedaGeneral);
-router.get("/busqueda/autor", busquedaAutores);
-router.get("/busqueda/area-de-conocimiento", busquedaArea);
-router.get("/busqueda/revista", busquedaRevista);
-router.get("/revista/documentos", busquedaRevistaDocumentos);
-router.get("/busqueda/tipo-de-documento", busquedaTipoDocumento);
-router.get("/busqueda/pais-de-publicacion", busquedaPais);
-router.get("/busqueda/seccionesSelect", infoBusquedaSecciones);
 
 export default router;
