@@ -1,7 +1,51 @@
-import { io } from "../app.js";
 import Solicitudes from "../models/solicitudes.model.js";
-import mongoose from "mongoose";
-const { ObjectId } = mongoose.Types;
+import { solicitud_aprovada } from "../assets/email-responses/Solicitud-Aprovada/solicitud-aprovada.js";
+
+export const updateSolicitud = async (req, res) => {
+  const fechaActual = new Date();
+  const horaLocal = fechaActual.toISOString();
+  try {
+    const result = await Solicitudes.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        ApprovalStatus: req.body.solicitud.Asunto,
+        DocumentStatus: "FINALIZADA",
+        EndedAt: horaLocal,
+        Notas: req.body.solicitud.Notas,
+      },
+      { new: true } // Esto asegura que la respuesta sea el documento actualizado
+    );
+    const notas = "Sin Notas";
+    const email = solicitud_aprovada(
+      req.body.solicitud.Destinatario,
+      req.body.solicitud.Asunto,
+      req.body.solicitud.Notas,
+      req.body.addDocument.Autores,
+      req.body.addDocument["Título"],
+      req.body.solicitud.Id,
+    );
+
+    console.log(email);
+
+    if (result) {
+      res.status(200).json({
+        message: "Solicitud actualizada correctamente",
+        status: 200,
+        result: result,
+      });
+    } else {
+      res.json({
+        message: "Ocurrió en error al actualizar la solicitud",
+        status: 404,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor", error: error.message });
+  }
+};
 
 export const getSolicitudes = async (req, res) => {
   try {
@@ -14,31 +58,6 @@ export const getSolicitudes = async (req, res) => {
     res
       .status(500)
       .send({ message: "Error al obtener solicitudes", error: error.message });
-  }
-};
-
-export const updateSolicitud = async (req, res) => {
-  const fechaActual = new Date();
-  const horaLocal = fechaActual.toISOString();
-  try {
-    console.log(req.body.solicitud);
-    const result = await Solicitudes.findByIdAndUpdate(
-      { _id: req.params.id },
-      {
-        ApprovalStatus: req.body.solicitud.Asunto,
-        DocumentStatus: "FINALIZADA",
-        EndedAt: horaLocal,
-        Notas: req.body.solicitud.Notas,
-      }
-    );
-
-    console.log(result);
-    if (!result) return res.status(404).json({ message: "No encontrado" });
-    res.json(result);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error interno del servidor", error: error.message });
   }
 };
 
