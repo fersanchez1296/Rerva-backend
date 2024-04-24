@@ -2,11 +2,11 @@ import { transporter } from "../../../config.js";
 import fs from "fs";
 
 const htmlContent = fs.readFileSync(
-  "src/assets/email-responses/Solicitud-Aprovada/index.html",
+  "src/assets/email-responses/Solicitud-Rechazada/index.html",
   "utf8"
 );
 
-export const solicitud_aprovada = async (
+export const solicitud_rechazada = async (
   Destinatario,
   Asunto,
   Notas,
@@ -17,9 +17,9 @@ export const solicitud_aprovada = async (
   const htmlContentValues = htmlContent
     .replace(/{nombre}/g, Nombre)
     .replace(/{id}/g, Id)
-    .replace(/{ASUNTO}/g, Asunto)
-    .replace(/{título}/g, Titulo)
-    .replace(/{Notas}/g, Notas);
+    .replace(/{Asunto}/g, Asunto)
+    .replace(/{titulo}/g, Titulo)
+    .replace(/{retroalimentacion}/g, Notas);
   const email = await transporter.sendMail({
     from: '"RECUV-CUValles" <fernando.sanchez3411@alumnos.udg.mx>',
     to: Destinatario,
@@ -44,12 +44,12 @@ export const solicitud_aprovada = async (
       {
         filename: "image-5.png",
         path: "src/assets/email-responses/Solicitud-Aprovada/images/image-5.png",
-        cid: "approvedImage",
+        cid: "headerImage",
       },
       {
         filename: "image-6.png",
         path: "src/assets/email-responses/Solicitud-Aprovada/images/image-6.png",
-        cid: "headerImage",
+        cid: "rejectedImage",
       },
     ],
   });

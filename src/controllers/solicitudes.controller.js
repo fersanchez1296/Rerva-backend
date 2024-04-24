@@ -1,9 +1,13 @@
 import Solicitudes from "../models/solicitudes.model.js";
 import { solicitud_aprovada } from "../assets/email-responses/Solicitud-Aprovada/solicitud-aprovada.js";
+import { solicitud_rechazada } from "../assets/email-responses/Solicitud-Rechazada/solicitud-rechazada.js";
 
 export const updateSolicitud = async (req, res) => {
   const fechaActual = new Date();
   const horaLocal = fechaActual.toISOString();
+  const solicitud_status = req.body.solicitud.Asunto;
+  console.log(req.body.solicitud);
+  console.log(solicitud_status);
   try {
     const result = await Solicitudes.findOneAndUpdate(
       { _id: req.params.id },
@@ -13,19 +17,34 @@ export const updateSolicitud = async (req, res) => {
         EndedAt: horaLocal,
         Notas: req.body.solicitud.Notas,
       },
-      { new: true } // Esto asegura que la respuesta sea el documento actualizado
-    );
-    const notas = "Sin Notas";
-    const email = solicitud_aprovada(
-      req.body.solicitud.Destinatario,
-      req.body.solicitud.Asunto,
-      req.body.solicitud.Notas,
-      req.body.addDocument.Autores,
-      req.body.addDocument["Título"],
-      req.body.solicitud.Id,
+      { new: true }
     );
 
-    console.log(email);
+    if (solicitud_status === "Solicitud Aprovada") {
+      try {
+        const email_aprovado = await solicitud_aprovada(
+          req.body.solicitud.Destinatario,
+          req.body.solicitud.Asunto,
+          req.body.solicitud.Notas,
+          req.body.solicitud.Autor,
+          req.body.solicitud.Titulo,
+          req.body.solicitud.Id
+        );
+        console.log(email_aprovado);
+      } catch (error) {}
+    } else {
+      try {
+        const email_rechazado = solicitud_rechazada(
+          req.body.solicitud.Destinatario,
+          req.body.solicitud.Asunto,
+          req.body.solicitud.Notas,
+          req.body.solicitud.Autor,
+          req.body.solicitud["Título"],
+          req.body.solicitud.Id
+        );
+        console.log(email_rechazado);
+      } catch (error) {}
+    }
 
     if (result) {
       res.status(200).json({
