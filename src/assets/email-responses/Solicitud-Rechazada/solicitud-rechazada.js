@@ -2,11 +2,11 @@ import { transporter } from "../../../config.js";
 import fs from "fs";
 
 const htmlContent = fs.readFileSync(
-  "src/assets/email-responses/Solicitud-Aprovada/index.html",
+  "src/assets/email-responses/Solicitud-Rechazada/index.html",
   "utf8"
 );
 
-export const solicitud_aprovada = async (
+export const solicitud_rechazada = async (
   Destinatario,
   Asunto,
   Notas,
@@ -28,27 +28,27 @@ export const solicitud_aprovada = async (
     attachments: [
       {
         filename: "image-1.png",
-        path: "src/assets/email-responses/Solicitud-Aprovada/images/image-1.png",
+        path: "src/assets/email-responses/Solicitud-Rechazada/images/image-1.png",
         cid: "facebookImage",
       },
       {
         filename: "image-2.png",
-        path: "src/assets/email-responses/Solicitud-Aprovada/images/image-2.png",
+        path: "src/assets/email-responses/Solicitud-Rechazada/images/image-2.png",
         cid: "twitterImage",
       },
       {
         filename: "image-4.png",
-        path: "src/assets/email-responses/Solicitud-Aprovada/images/image-4.png",
+        path: "src/assets/email-responses/Solicitud-Rechazada/images/image-4.png",
         cid: "instagramImage",
       },
       {
         filename: "image-5.png",
-        path: "src/assets/email-responses/Solicitud-Aprovada/images/image-5.png",
+        path: "src/assets/email-responses/Solicitud-Rechazada/images/image-5.png",
         cid: "approvedImage",
       },
       {
         filename: "image-6.png",
-        path: "src/assets/email-responses/Solicitud-Aprovada/images/image-6.png",
+        path: "src/assets/email-responses/Solicitud-Rechazada/images/image-6.png",
         cid: "headerImage",
       },
     ],

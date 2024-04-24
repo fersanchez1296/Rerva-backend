@@ -13,7 +13,7 @@ export const updateSolicitud = async (req, res) => {
         EndedAt: horaLocal,
         Notas: req.body.solicitud.Notas,
       },
-      { new: true } // Esto asegura que la respuesta sea el documento actualizado
+      { new: true }
     );
     const notas = "Sin Notas";
     const email = solicitud_aprovada(
