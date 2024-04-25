@@ -8,7 +8,6 @@ import {
   busqueda_areas,
   busqueda_revistas,
   busqueda_documentos_revistas,
-  busqueda_documentos_autores,
   graficos_municipios,
   graficos_paises
 
@@ -24,7 +23,6 @@ router.get("/busqueda/autor", busqueda_autores);
 router.get("/busqueda/area-de-conocimiento", busqueda_areas);
 router.get("/busqueda/revista", busqueda_revistas);
 router.get("/busqueda/documentos-revista", busqueda_documentos_revistas);
-router.get("/busqueda/documentos-autor", busqueda_documentos_autores);
 router.get("/busqueda/pais-de-publicacion", busqueda_paises);
 
 
