@@ -751,7 +751,6 @@ export const busqueda_documentos_autores = async (req, res) => {
       .json({ message: "No hay coincidencias en la base de datos." });
   }
 };
-
 export const busqueda_autores = async (req, res) => {
   const busqueda = req.query.search.replace(/\+/g, " ");
 
