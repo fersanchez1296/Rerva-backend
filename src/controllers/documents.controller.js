@@ -59,7 +59,7 @@ export const busqueda_paises = async (req, res) => {
         },
       },
       {
-        $sort: { Año: 1},
+        $sort: { Año: 1 },
       },
       {
         $project: {
@@ -73,8 +73,8 @@ export const busqueda_paises = async (req, res) => {
           "País de la Publicación": 1,
           Área: 1,
           "Tipo de documento": 1,
-          "Campo": 1,
-          "Disciplina" : 1,
+          Campo: 1,
+          Disciplina: 1,
         },
       },
     ]);
@@ -156,8 +156,8 @@ export const busqueda_municipios = async (req, res) => {
           "País de la Publicación": 1,
           Área: 1,
           "Tipo de documento": 1,
-          "Campo": 1,
-          "Disciplina" : 1,
+          Campo: 1,
+          Disciplina: 1,
         },
       },
     ]);
@@ -218,14 +218,15 @@ export const busqueda_municipios = async (req, res) => {
 };
 export const graficos_paises = async (req, res) => {
   try {
+    const result = await Documents.aggregate([
+      {
+        $group: {
+          _id: "$País de la Publicación",
+          count: { $sum: 1 },
+        },
+      },
+    ]).sort({ count: -1 });
 
-    const result = await Documents.aggregate([{
-      $group:{
-        _id: "$País de la Publicación",
-        count:{$sum:1},
-      }
-    }]).sort({"count" : -1});
-    
     const finalResult = result.map((value) => ({
       name_es: value._id,
       count: value.count,
@@ -235,9 +236,9 @@ export const graficos_paises = async (req, res) => {
     const XLabels = finalResult.map((label) => label.count);
     const labels = {
       YLabels,
-      XLabels
-    }
-    res.send({finalResult,labels});
+      XLabels,
+    };
+    res.send({ finalResult, labels });
   } catch (error) {
     res.send(error);
   }
@@ -247,20 +248,19 @@ export const graficos_municipios = async (req, res) => {
     const result = await Documents.aggregate([
       {
         $addFields: {
-          municipios: { $split: ["$Municipios de estudio", ", "] } 
-        }
+          municipios: { $split: ["$Municipios de estudio", ", "] },
+        },
       },
       {
-        $unwind: "$municipios"
+        $unwind: "$municipios",
       },
       {
         $group: {
-          _id: "$municipios", 
-          count: { $sum: 1 }
-        }
-      }
-    ]).sort({"count" : -1});
-    
+          _id: "$municipios",
+          count: { $sum: 1 },
+        },
+      },
+    ]).sort({ count: -1 });
 
     const finalResult = result.map((value) => ({
       name_es: value._id,
@@ -271,9 +271,9 @@ export const graficos_municipios = async (req, res) => {
     const XLabels = finalResult.map((label) => label.count);
     const labels = {
       YLabels,
-      XLabels
-    }
-    res.send({finalResult,labels});
+      XLabels,
+    };
+    res.send({ finalResult, labels });
   } catch (error) {
     res.send(error);
   }
@@ -340,8 +340,8 @@ export const busqueda_general = async (req, res) => {
           "País de la Publicación": 1,
           Área: 1,
           "Tipo de documento": 1,
-          "Campo": 1,
-          "Disciplina" : 1,
+          Campo: 1,
+          Disciplina: 1,
         },
       },
     ]);
@@ -425,8 +425,8 @@ export const busqueda_areas = async (req, res) => {
           "País de la Publicación": 1,
           Área: 1,
           "Tipo de documento": 1,
-          "Campo": 1,
-          "Disciplina" : 1,
+          Campo: 1,
+          Disciplina: 1,
         },
       },
     ]);
@@ -526,7 +526,7 @@ export const busqueda_revistas = async (req, res) => {
         },
       },
     ]);
-    
+
     const clavesResultados = Object.keys(resultados[0]).filter(
       (clave) => clave !== "Área" && clave !== "Tipo de documento"
     );
@@ -610,9 +610,7 @@ export const busqueda_documentos_revistas = async (req, res) => {
         },
       },
     ]);
-    
-    
-    
+
     const clavesResultados = Object.keys(resultados[0]).filter(
       (clave) => clave !== "Área" && clave !== "Tipo de documento"
     );
@@ -669,13 +667,111 @@ export const busqueda_documentos_revistas = async (req, res) => {
       .json({ message: "No hay coincidencias en la base de datos." });
   }
 };
+export const busqueda_documentos_autores = async (req, res) => {
+  const autor = req.query.search.replace(/\+/g, " ");
+  try {
+    const resultados = await Documents.aggregate([
+      {
+        $match: {
+          "Autores": { $regex: new RegExp(autor, "i") },
+        },
+      },
+      { $sort: { Año: 1 } },
+      {
+        $project: {
+          _id: 0,
+          "Link de acceso": 1,
+          "Nombre de la revista/libro": 1,
+          Título: 1,
+          Idioma: 1,
+          Año: 1,
+          Autores: 1,
+          "País de la Publicación": 1,
+          Área: 1,
+          "Tipo de documento": 1,
+          Campo: 1,
+          Disciplina: 1,
+        },
+      },
+    ]);
+
+    const clavesResultados = Object.keys(resultados[0]).filter(
+      (clave) => clave !== "Área" && clave !== "Tipo de documento"
+    );
+
+    const paises = resultados.map(
+      (resultado) => resultado["País de la Publicación"]
+    );
+    const paisFrequency = paises.reduce((acc, pais) => {
+      acc[pais] = (acc[pais] || 0) + 1;
+      return acc;
+    }, {});
+    const orderedPaisFrequency = Object.fromEntries(
+      Object.entries(paisFrequency).sort(
+        ([, aCount], [, bCount]) => aCount - bCount
+      )
+    );
+
+    const areas = resultados.map((resultado) => resultado["Área"]);
+    const areaFrequency = areas.reduce((acc, area) => {
+      acc[area] = (acc[area] || 0) + 1;
+      return acc;
+    }, {});
+    const orderedAreaFrequency = Object.fromEntries(
+      Object.entries(areaFrequency).sort(
+        ([, aCount], [, bCount]) => aCount - bCount
+      )
+    );
+
+    const tiposDocumento = resultados.map(
+      (resultado) => resultado["Tipo de documento"]
+    );
+    const tiposDocumentoFrequency = tiposDocumento.reduce((acc, tipo) => {
+      acc[tipo] = (acc[tipo] || 0) + 1;
+      return acc;
+    }, {});
+    const orderedTipoDocumentoFrequency = Object.fromEntries(
+      Object.entries(tiposDocumentoFrequency).sort(
+        ([, aCount], [, bCount]) => aCount - bCount
+      )
+    );
+
+    res.send({
+      resultados: resultados,
+      tableTitle: clavesResultados,
+      dt: [
+        orderedPaisFrequency,
+        orderedAreaFrequency,
+        orderedTipoDocumentoFrequency,
+      ],
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "No hay coincidencias en la base de datos." });
+  }
+};
+
 export const busqueda_autores = async (req, res) => {
   const busqueda = req.query.search.replace(/\+/g, " ");
 
   try {
-    const resultados = await Autores.find({
-      Autor: { $regex: `(${busqueda})`, $options: "i" },
-    });
+    const resultados = await Autores.aggregate([
+      {
+        $match: {
+          Autor: { $regex: new RegExp(busqueda, "i") },
+        },
+      },
+      {
+        $sort: { Autor: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          Autor: 1,
+        },
+      },
+    ]);
     const clavesResultados = Object.keys(resultados[0]).filter(
       (clave) => clave !== "Área" && clave !== "Tipo de documento"
     );

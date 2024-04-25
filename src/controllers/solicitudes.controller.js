@@ -6,8 +6,7 @@ export const updateSolicitud = async (req, res) => {
   const fechaActual = new Date();
   const horaLocal = fechaActual.toISOString();
   const solicitud_status = req.body.solicitud.Asunto;
-  console.log(req.body.solicitud);
-  console.log(solicitud_status);
+  console.log(req.body);
   try {
     const result = await Solicitudes.findOneAndUpdate(
       { _id: req.params.id },
@@ -34,12 +33,12 @@ export const updateSolicitud = async (req, res) => {
       } catch (error) {}
     } else {
       try {
-        const email_rechazado = solicitud_rechazada(
+        const email_rechazado = await solicitud_rechazada(
           req.body.solicitud.Destinatario,
           req.body.solicitud.Asunto,
           req.body.solicitud.Notas,
           req.body.solicitud.Autor,
-          req.body.solicitud["Título"],
+          req.body.solicitud.Titulo,
           req.body.solicitud.Id
         );
         console.log(email_rechazado);

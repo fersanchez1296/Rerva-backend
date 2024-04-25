@@ -17,15 +17,9 @@ export const solicitud_aprovada = async (
   const htmlContentValues = htmlContent
     .replace(/{nombre}/g, Nombre)
     .replace(/{id}/g, Id)
-<<<<<<< HEAD
-    .replace(/{ASUNTO}/g, Asunto)
-    .replace(/{título}/g, Titulo)
-    .replace(/{Notas}/g, Notas);
-=======
     .replace(/{Asunto}/g, Asunto)
     .replace(/{título}/g, Titulo)
-    .replace(/{retroalimentacion}/g, Notas);
->>>>>>> 292955c2db736781b2e89c637e3d8b16cacf2676
+    .replace(/{Notas}/g, Notas);
   const email = await transporter.sendMail({
     from: '"RECUV-CUValles" <fernando.sanchez3411@alumnos.udg.mx>',
     to: Destinatario,
