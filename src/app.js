@@ -5,6 +5,7 @@ import documentsRoutes from "./routes/documents.routes.js";
 import autoresRoutes from "./routes/autores.routes.js";
 import solicitudesRoutes from "./routes/solicitudes.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import contactoRoutes from "./routes/contacto.routes.js"
 import cors from "cors";
 import "dotenv/config";
 import { Server } from "socket.io";
@@ -31,6 +32,7 @@ app.use("/api", documentsRoutes);
 app.use("/api", autoresRoutes);
 app.use("/api", solicitudesRoutes);
 app.use("/api", dashboardRoutes);
+app.use("/api", contactoRoutes);
 
 // Crear el servidor HTTP
 const server = http.createServer(app);

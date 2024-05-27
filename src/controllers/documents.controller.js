@@ -1,6 +1,53 @@
 import Documents from "../models/document.model.js";
 import Autores from "../models/autores.model.js";
 
+//   try {
+//     const [
+//       totalDocumentos,
+//       totalAutores,
+//       distinctRevistas,
+//       distinctAreas,
+//       distinctPaises,
+//     ] = await Promise.all([
+//       Documents.countDocuments(),
+//       Autores.countDocuments(),
+//       Documents.distinct("Nombre de la revista/libro"),
+//       Documents.distinct("Área"),
+//       Documents.distinct("País de la Publicación"),
+//     ]);
+
+//     const totalRevistas = distinctRevistas.length;
+//     const totalPaises = distinctPaises.length;
+
+//     const areasResponse = distinctAreas.map((area, index) => ({
+//       value: (index + 1).toString(),
+//       label: area,
+//     }));
+
+//     const paisesResponse = distinctPaises.map((pais, index) => ({
+//       value: (index + 1).toString(),
+//       label: pais,
+//     }));
+
+//     const indicadores = [
+//       {
+//         documentos: totalDocumentos,
+//         revistas: totalRevistas,
+//         paises: totalPaises,
+//         autores: totalAutores,
+//       },
+//     ];
+
+//     res.send({
+//       indicadores: indicadores,
+//       areas: areasResponse,
+//       paises: paisesResponse,
+//     });
+//   } catch (error) {
+//     console.error("Error al procesar la solicitud:", error);
+//     res.status(500).send({ error: "Error al procesar la solicitud" });
+//   }
+// };
 export const secciones_busqueda = async (req, res) => {
   try {
     const [
@@ -9,12 +56,38 @@ export const secciones_busqueda = async (req, res) => {
       distinctRevistas,
       distinctAreas,
       distinctPaises,
+      paisesResult,
+      municipiosResult,
     ] = await Promise.all([
       Documents.countDocuments(),
       Autores.countDocuments(),
       Documents.distinct("Nombre de la revista/libro"),
       Documents.distinct("Área"),
       Documents.distinct("País de la Publicación"),
+      Documents.aggregate([
+        {
+          $group: {
+            _id: "$País de la Publicación",
+            count: { $sum: 1 },
+          },
+        },
+      ]).sort({ count: -1 }),
+      Documents.aggregate([
+        {
+          $addFields: {
+            municipios: { $split: ["$Municipios de estudio", ", "] },
+          },
+        },
+        {
+          $unwind: "$municipios",
+        },
+        {
+          $group: {
+            _id: "$municipios",
+            count: { $sum: 1 },
+          },
+        },
+      ]).sort({ count: -1 }),
     ]);
 
     const totalRevistas = distinctRevistas.length;
@@ -39,10 +112,35 @@ export const secciones_busqueda = async (req, res) => {
       },
     ];
 
+    const graficosPaises = paisesResult.map((value) => ({
+      name_es: value._id,
+      count: value.count,
+    }));
+
+    const graficosMunicipios = municipiosResult.map((value) => ({
+      name_es: value._id,
+      count: value.count,
+    }));
+
+    const labelsPaises = {
+      YLabels: graficosPaises.map((label) => label.name_es),
+      XLabels: graficosPaises.map((label) => label.count),
+    };
+
+    const labelsMunicipios = {
+      YLabels: graficosMunicipios.map((label) => label.name_es),
+      XLabels: graficosMunicipios.map((label) => label.count),
+    };
+
     res.send({
       indicadores: indicadores,
       areas: areasResponse,
       paises: paisesResponse,
+      graficosPaises: { finalResult: graficosPaises, labels: labelsPaises },
+      graficosMunicipios: {
+        finalResult: graficosMunicipios,
+        labels: labelsMunicipios,
+      },
     });
   } catch (error) {
     console.error("Error al procesar la solicitud:", error);
@@ -212,68 +310,6 @@ export const busqueda_municipios = async (req, res) => {
         orderedTipoDocumentoFrequency,
       ],
     });
-  } catch (error) {
-    res.send(error);
-  }
-};
-export const graficos_paises = async (req, res) => {
-  try {
-    const result = await Documents.aggregate([
-      {
-        $group: {
-          _id: "$País de la Publicación",
-          count: { $sum: 1 },
-        },
-      },
-    ]).sort({ count: -1 });
-
-    const finalResult = result.map((value) => ({
-      name_es: value._id,
-      count: value.count,
-    }));
-
-    const YLabels = finalResult.map((label) => label.name_es);
-    const XLabels = finalResult.map((label) => label.count);
-    const labels = {
-      YLabels,
-      XLabels,
-    };
-    res.send({ finalResult, labels });
-  } catch (error) {
-    res.send(error);
-  }
-};
-export const graficos_municipios = async (req, res) => {
-  try {
-    const result = await Documents.aggregate([
-      {
-        $addFields: {
-          municipios: { $split: ["$Municipios de estudio", ", "] },
-        },
-      },
-      {
-        $unwind: "$municipios",
-      },
-      {
-        $group: {
-          _id: "$municipios",
-          count: { $sum: 1 },
-        },
-      },
-    ]).sort({ count: -1 });
-
-    const finalResult = result.map((value) => ({
-      name_es: value._id,
-      count: value.count,
-    }));
-
-    const YLabels = finalResult.map((label) => label.name_es);
-    const XLabels = finalResult.map((label) => label.count);
-    const labels = {
-      YLabels,
-      XLabels,
-    };
-    res.send({ finalResult, labels });
   } catch (error) {
     res.send(error);
   }
@@ -673,7 +709,7 @@ export const busqueda_documentos_autores = async (req, res) => {
     const resultados = await Documents.aggregate([
       {
         $match: {
-          "Autores": { $regex: new RegExp(autor, "i") },
+          Autores: { $regex: new RegExp(autor, "i") },
         },
       },
       { $sort: { Año: 1 } },

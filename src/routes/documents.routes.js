@@ -9,15 +9,11 @@ import {
   busqueda_revistas,
   busqueda_documentos_revistas,
   busqueda_documentos_autores,
-  graficos_municipios,
-  graficos_paises
 
 } from "../controllers/documents.controller.js";
 
 const router = Router();
 router.get("/secciones-busqueda", secciones_busqueda);
-router.get("/graficos/municipios", graficos_municipios);
-router.get("/graficos/paises", graficos_paises);
 router.get("/busqueda/general", busqueda_general);
 router.get("/busqueda/municipio", busqueda_municipios);
 router.get("/busqueda/autor", busqueda_autores);
