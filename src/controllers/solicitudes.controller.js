@@ -110,3 +110,29 @@ export const postSolicitud = async (req, res) => {
     res.send(error);
   }
 };
+
+export const deleteSolicitud = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const result = await Solicitudes.deleteOne({ _id: id });
+    console.log(result);
+    if (result) {
+      res.status(200).json({
+        message: "Solicitud eliminada correctamente",
+        status: 200,
+        result: result,
+      });
+    } else {
+      res.json({
+        message: "Ocurrió en error al eliminar la solicitud",
+        status: 404,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor", error: error.message });
+  }
+};
