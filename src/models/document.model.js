@@ -68,8 +68,6 @@ const documentSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    //TODO
-    //arreglar en BD
     "Disciplina ": {
       type: String,
       required: true,
@@ -107,6 +105,10 @@ const documentSchema = mongoose.Schema(
     "Clasificación": {
       type: String,
       required: true,
+      trim: true,
+    },
+    "DOI": {
+      type: String,
       trim: true,
     },
   },
