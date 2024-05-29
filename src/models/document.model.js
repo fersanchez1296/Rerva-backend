@@ -68,12 +68,7 @@ const documentSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    "Disciplina ": {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    "Temática": {
+    Disciplina: {
       type: String,
       required: true,
       trim: true,

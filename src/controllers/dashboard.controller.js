@@ -10,6 +10,118 @@ export const getDocuments = async (req, res) => {
   }
 };
 
+export const postDocument = async (req, res) => {
+  try {
+    const nuevoDocumento = new Document({
+      Título: req.body.addDocument["Título"],
+      Año: req.body.addDocument["Año"],
+      "Tipo de autoría": req.body.addDocument["Tipo de autoría"],
+      Autores: req.body.addDocument.Autores,
+      "Tipo de documento": req.body.addDocument["Tipo de documento"],
+      Clasificación: req.body.addDocument["Clasificación"],
+      "Nombre de la revista/libro":
+        req.body.addDocument["Nombre de la revista/libro"],
+      "Compilador/ Editor/ Coordinador/ Libro":
+        req.body.addDocument["Compilador/Editor/Coordinador/Libro"],
+      "País de la Publicación": req.body.addDocument["País de la Publicación"],
+      "Libros/Editorial": req.body.addDocument["Libros/Editorial"],
+      "Tesis/ Institución": req.body.addDocument["Tesis/Institución"],
+      "Tipo de consulta": req.body.addDocument["Tipo de consulta"],
+      "Link de acceso": req.body.addDocument["Link de acceso"],
+      DOI: req.body.addDocument.DOI,
+      Área: req.body.addDocument["Área"],
+      Campo: req.body.addDocument.Campo,
+      Disciplina: req.body.addDocument.Disciplina,
+      "Municipios de estudio": req.body.addDocument["Municipios de estudio"],
+      "Palabras Clave": req.body.addDocument["Palabras Clave"],
+      Disponibilidad: req.body.addDocument.Disponibilidad,
+      "Número de páginas": req.body.addDocument["Número de páginas"],
+      Idioma: req.body.addDocument.Idioma,
+    });
+
+    const result = await nuevoDocumento.save();
+    if (!result)
+      return res
+        .status(404)
+        .json({ message: "No Pudimos agregar el documento", status: 500 });
+    res.status(200).json({
+      message: "¡El documento se agregó correctamente!",
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateDocument = async (req, res) => {
+  try {
+    const result = await Document.findOneAndUpdate(
+      { _id: req.params.Id },
+      {
+        Título: req.body.addDocument["Título"],
+        Año: req.body.addDocument["Año"],
+        "Tipo de autoría": req.body.addDocument["Tipo de autoría"],
+        Autores: req.body.addDocument.Autores,
+        "Tipo de documento": req.body.addDocument["Tipo de documento"],
+        Clasificación: req.body.addDocument["Clasificación"],
+        "Nombre de la revista/libro":
+          req.body.addDocument["Nombre de la revista/libro"],
+        "Compilador/ Editor/ Coordinador/ Libro":
+          req.body.addDocument["Compilador/Editor/Coordinador/Libro"],
+        "País de la Publicación":
+          req.body.addDocument["País de la Publicación"],
+        "Libros/Editorial": req.body.addDocument["Libros/Editorial"],
+        "Tesis/ Institución": req.body.addDocument["Tesis/Institución"],
+        "Tipo de consulta": req.body.addDocument["Tipo de consulta"],
+        "Link de acceso": req.body.addDocument["Link de acceso"],
+        DOI: req.body.addDocument.DOI,
+        Área: req.body.addDocument["Área"],
+        Campo: req.body.addDocument.Campo,
+        Disciplina: req.body.addDocument.Disciplina,
+        "Municipios de estudio": req.body.addDocument["Municipios de estudio"],
+        "Palabras Clave": req.body.addDocument["Palabras Clave"],
+        Disponibilidad: req.body.addDocument.Disponibilidad,
+        "Número de páginas": req.body.addDocument["Número de páginas"],
+        Idioma: req.body.addDocument.Idioma,
+      },
+      { new: true }
+    );
+
+    if (!result)
+      return res
+        .status(404)
+        .json({ message: "No se pudo actualizar el documento", status: 500 });
+    res.status(200).json({
+      message: "¡El documento se actualizó correctamente!.",
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteDocument = async (req, res) => {
+  const { id } = req.params.id;
+  try {
+    const result = await Documents.deleteOne({ _id: id });
+    console.log(result);
+    if (result) {
+      res.status(200).json({
+        message: "Documento eliminado correctamente",
+        status: 200,
+        result: result,
+      });
+    } else {
+      res.json({
+        message: "Ocurrió en error al eliminar el documento",
+        status: 404,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getHistorial = async (req, res) => {
   try {
     const resultados = await Solicitudes.find({
@@ -31,13 +143,11 @@ export const getBusqueda = async (req, res) => {
       ],
     });
     if (Array.isArray(resultados) && resultados.length > 0) {
-      res
-        .status(200)
-        .json({
-          message: "Encontramos resultados en la base de datos",
-          status: 200,
-          result: resultados,
-        });
+      res.status(200).json({
+        message: "Encontramos resultados en la base de datos",
+        status: 200,
+        result: resultados,
+      });
     } else {
       res.json({
         message: "No hay información para esta búsqueda",
@@ -61,7 +171,6 @@ export const dashboard_estadisticas = async (req, res) => {
       distinctPaises,
       distinctDisciplinas,
       distinctCampos,
-      
     ] = await Promise.all([
       Documents.countDocuments(),
       Autores.countDocuments(),
@@ -72,7 +181,7 @@ export const dashboard_estadisticas = async (req, res) => {
       Documents.distinct("Disciplina"),
       Documents.distinct("Campo"),
     ]);
-    
+
     const totalInstituciones = distinctInstituciones.length;
     const totalRevistas = distinctRevistas.length;
     const totalAreas = distinctAreas.length;
@@ -81,15 +190,15 @@ export const dashboard_estadisticas = async (req, res) => {
     const totalCampos = distinctCampos.length;
 
     const documentosData = {
-      tDocumentos : totalDocumentos,
-      tAutores : totalAutores,
-      tInstituciones : totalInstituciones,
-      tRevistas : totalRevistas,
-      tAreas : totalAreas,
-      tPaises : totalPaises,
-      tDisciplinas : totalDisciplinas,
-      tCampos : totalCampos
-    }
+      tDocumentos: totalDocumentos,
+      tAutores: totalAutores,
+      tInstituciones: totalInstituciones,
+      tRevistas: totalRevistas,
+      tAreas: totalAreas,
+      tPaises: totalPaises,
+      tDisciplinas: totalDisciplinas,
+      tCampos: totalCampos,
+    };
 
     const areasFrecuencia = await Documents.aggregate([
       { $group: { _id: "$Área", count: { $sum: 1 } } },
@@ -100,11 +209,11 @@ export const dashboard_estadisticas = async (req, res) => {
     const areasValues = areasFrecuencia.map((area) => area.count);
 
     const documentosGraphicsData = {
-      labels : areaslabels,
-      datasets : {label : "Publicaciones", data: areasValues},
+      labels: areaslabels,
+      datasets: { label: "Publicaciones", data: areasValues },
     };
 
-    res.send({documentosData,documentosGraphicsData,distinctPaises});
+    res.send({ documentosData, documentosGraphicsData, distinctPaises });
   } catch (error) {
     console.log(error);
     res.send(error);

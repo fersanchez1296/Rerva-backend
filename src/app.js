@@ -34,22 +34,4 @@ app.use("/api", solicitudesRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", contactoRoutes);
 
-// Crear el servidor HTTP
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*", // Permitir solicitudes desde cualquier origen
-    methods: ["GET", "POST"], // Permitir los métodos GET y POST
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("Nuevo cliente conectado");
-});
-
-
-server.listen(IoPORT, () => {
-  console.log(`Servidor Socket.IO escuchando en el puerto ${IoPORT}`);
-});
-export { io };
 export default app;

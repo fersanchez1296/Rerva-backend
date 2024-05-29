@@ -1,7 +1,7 @@
 import Documents from "../models/document.model.js";
 import Autores from "../models/autores.model.js";
 
-//   try {
+
 //     const [
 //       totalDocumentos,
 //       totalAutores,

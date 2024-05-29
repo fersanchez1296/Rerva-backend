@@ -7,12 +7,14 @@ import mongoose from "mongoose";
 export const updateSolicitud = async (req, res) => {
   const fechaActual = new Date();
   const horaLocal = fechaActual.toISOString();
-  console.log(req.body.solicitud);
   const solicitud_status = req.body.solicitud.Asunto;
   const session = await mongoose.startSession();
+  
   try {
+    session.startTransaction();
+
     const result = await Solicitudes.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: req.body.solicitud.Id },
       {
         ApprovalStatus: req.body.solicitud.Asunto,
         DocumentStatus: "FINALIZADA",
@@ -22,6 +24,10 @@ export const updateSolicitud = async (req, res) => {
       { session, new: true }
     );
 
+    if (!result) {
+      throw new Error('No se encontró la solicitud');
+    }
+
     const nuevoDocumento = new Document({
       Título: req.body.addDocument["Título"],
       Año: req.body.addDocument["Año"],
@@ -30,10 +36,10 @@ export const updateSolicitud = async (req, res) => {
       "Tipo de documento": req.body.addDocument["Tipo de documento"],
       Clasificación: req.body.addDocument["Clasificación"],
       "Nombre de la revista/libro": req.body.addDocument["Nombre de la revista/libro"],
-      "Compilador/Editor/Coordinador/Libro": req.body.addDocument["Compilador/Editor/Coordinador/Libro"],
+      "Compilador/ Editor/ Coordinador/ Libro": req.body.addDocument["Compilador/Editor/Coordinador/Libro"],
       "País de la Publicación": req.body.addDocument["País de la Publicación"],
       "Libros/Editorial": req.body.addDocument["Libros/Editorial"],
-      "Tesis/Institución": req.body.addDocument["Tesis/Institución"],
+      "Tesis/ Institución": req.body.addDocument["Tesis/Institución"],
       "Tipo de consulta": req.body.addDocument["Tipo de consulta"],
       "Link de acceso": req.body.addDocument["Link de acceso"],
       DOI: req.body.addDocument.DOI,
@@ -48,6 +54,7 @@ export const updateSolicitud = async (req, res) => {
     });
 
     await nuevoDocumento.save({ session });
+
     await session.commitTransaction();
     session.endSession();
 
@@ -62,7 +69,9 @@ export const updateSolicitud = async (req, res) => {
           req.body.solicitud.Id
         );
         console.log(email_aprovado);
-      } catch (error) {}
+      } catch (error) {
+        console.error('Error enviando email de aprobación:', error);
+      }
     } else {
       try {
         const email_rechazado = await solicitud_rechazada(
@@ -74,30 +83,24 @@ export const updateSolicitud = async (req, res) => {
           req.body.solicitud.Id
         );
         console.log(email_rechazado);
-      } catch (error) {}
+      } catch (error) {
+        console.error('Error enviando email de rechazo:', error);
+      }
     }
 
-    if (result) {
-      res.status(200).json({
-        message: "Solicitud actualizada correctamente",
-        status: 200,
-        result: result,
-      });
-    } else {
-      res.json({
-        message: "Ocurrió en error al actualizar la solicitud",
-        status: 404,
-      });
-    }
+    res.status(200).json({
+      message: "Solicitud actualizada correctamente",
+      status: 200,
+      result: result,
+    });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
     console.error('Transacción fallida, se hizo rollback:', error);
-    res
-      .status(500)
-      .json({ message: "Error interno del servidor", error: error.message });
+    res.status(500).json({ message: "Error interno del servidor", error: error.message });
   }
 };
+
 
 export const getSolicitudes = async (req, res) => {
   try {
