@@ -6,10 +6,9 @@ import autoresRoutes from "./routes/autores.routes.js";
 import solicitudesRoutes from "./routes/solicitudes.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import contactoRoutes from "./routes/contacto.routes.js"
+import authRoutes from "./routes/auth.routes.js"
 import cors from "cors";
 import "dotenv/config";
-import { Server } from "socket.io";
-import http from "http";
 
 const app = express();
 app.use(cors());
@@ -24,7 +23,6 @@ app.use(bodyParser.json());
 
 const URL_CONNNECT = process.env.URL_CONNNECT;
 export const PORT = process.env.PORT;
-export const IoPORT = process.env.IoPORT;
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -33,5 +31,6 @@ app.use("/api", autoresRoutes);
 app.use("/api", solicitudesRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", contactoRoutes);
+app.use("/api", authRoutes)
 
 export default app;
