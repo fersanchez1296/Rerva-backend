@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import Usuarios from "../models/user.model.js";
 import { createAccessToken } from "../libs/jwt.js";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
+
+const SECRET = process.env.SECRET
 
 export const register = async (req, res) => {
   const { user, password, nombre } = req.body;
@@ -60,6 +64,28 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  res.cookie("token", "", { expires: new Date(0) });
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: true,
+    expires: new Date(0),
+  });
   return res.status(200).json({ message: "Sesión cerrada." });
+};
+
+export const verifyToken = async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.send(false);
+
+  jwt.verify(token, SECRET, async (error, user) => {
+    if (error) return res.sendStatus(401);
+
+    const userFound = await Usuarios.findById(user.id);
+    if (!userFound) return res.sendStatus(401);
+
+    return res.json({
+      id: userFound._id,
+      username: userFound.username,
+      email: userFound.email,
+    });
+  });
 };
