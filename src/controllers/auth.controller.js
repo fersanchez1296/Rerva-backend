@@ -43,10 +43,15 @@ export const login = async (req, res) => {
 
     const token = await createAccessToken({ id: userFound._id });
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: process.env.NODE_ENV !== "development",
+      secure: true,
+      sameSite: "none",
+    });
     res.json({
       user: userFound.user,
       nombre: userFound.nombre,
+      token,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -56,5 +61,5 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   res.cookie("token", "", { expires: new Date(0) });
-  return res.sendStatus(200);
+  return res.status(200).json({ message: "Sesión cerrada." });
 };

@@ -1,24 +1,23 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import documentsRoutes from "./routes/documents.routes.js";
 import autoresRoutes from "./routes/autores.routes.js";
 import solicitudesRoutes from "./routes/solicitudes.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
-import contactoRoutes from "./routes/contacto.routes.js"
-import authRoutes from "./routes/auth.routes.js"
+import contactoRoutes from "./routes/contacto.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import cors from "cors";
 import "dotenv/config";
 
 const app = express();
-app.use(cors());
-app.options("*", cors());
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-    decode: (str) => decodeURIComponent(str),
-  })
-);
+app.use(cors({
+  origin: 'http://localhost:3000', // Cambia esto a la URL de tu frontend
+  credentials: true,
+}));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const URL_CONNNECT = process.env.URL_CONNNECT;
@@ -31,6 +30,6 @@ app.use("/api", autoresRoutes);
 app.use("/api", solicitudesRoutes);
 app.use("/api", dashboardRoutes);
 app.use("/api", contactoRoutes);
-app.use("/api", authRoutes)
+app.use("/api", authRoutes);
 
 export default app;
