@@ -4,28 +4,36 @@ import { createAccessToken } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-const SECRET = process.env.SECRET
+const SECRET = process.env.SECRET;
 
 export const register = async (req, res) => {
-  const { user, password, nombre } = req.body;
-  console.log("Este es el body->", req.body);
+  const { user, password, name, masterU, masterP } = req.body;
+  console.log(req.body);
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
+    const userFound = await Usuarios.findOne({ user: masterU });
+    if (!userFound)
+      return res.status(400).json({ message: "Master-User incorrecto" });
 
-    const newUser = new Usuarios({
-      user,
-      password: passwordHash,
-      nombre,
-    });
+    const isMatch = await bcrypt.compare(masterP, userFound.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Master-Password incorrecta" });
+    } else {
+      try {
+        const passwordHash = await bcrypt.hash(password, 10);
 
-    const userSaved = await newUser.save();
-    const token = await createAccessToken({ id: userSaved._id });
+        const newUser = new Usuarios({
+          user,
+          password: passwordHash,
+          name,
+        });
 
-    res.cookie("token", token);
-    res.json({
-      user: userSaved.user,
-      nombre: userSaved.nombre,
-    });
+        const userSaved = await newUser.save();
+        res.status(200).json({ message: "Usuario creado correctamente!" });
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+        console.log(error);
+      }
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.log(error);
