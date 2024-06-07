@@ -1,9 +1,28 @@
 import Documents from "../models/document.model.js";
 import Autores from "../models/autores.model.js";
+import User from "../models/user.model.js"
 import Solicitudes from "../models/solicitudes.model.js";
 export const getDocuments = async (req, res) => {
   try {
     const result = await Documents.find();
+    res.send(result);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getAuthors = async (req, res) => {
+  try {
+    const result = await Autores.find();
+    res.send(result);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+export const getUsers = async (req, res) => {
+  try {
+    const result = await User.find();
     res.send(result);
   } catch (error) {
     res.send(error);

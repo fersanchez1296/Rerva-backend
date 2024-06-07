@@ -5,12 +5,13 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 const SECRET = process.env.SECRET;
+const MASTER_USER = process.env.MASTER_USER
 
 export const register = async (req, res) => {
-  const { user, password, name, masterU, masterP } = req.body;
+  const { user, password, name, masterP } = req.body;
   console.log(req.body);
   try {
-    const userFound = await Usuarios.findOne({ user: masterU });
+    const userFound = await Usuarios.findOne({ user: MASTER_USER });
     if (!userFound)
       return res.status(400).json({ message: "Master-User incorrecto" });
 
@@ -22,9 +23,9 @@ export const register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, 10);
 
         const newUser = new Usuarios({
+          nombre: name,
           user,
           password: passwordHash,
-          name,
         });
 
         const userSaved = await newUser.save();
