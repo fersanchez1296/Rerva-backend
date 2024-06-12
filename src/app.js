@@ -13,7 +13,7 @@ import "dotenv/config";
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3000', // Cambia esto a la URL de tu frontend
+  origin: 'http://localhost:3600', // Cambia esto a la URL de tu frontend
   credentials: true,
 }));
 app.use(cookieParser());
