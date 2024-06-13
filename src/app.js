@@ -12,7 +12,6 @@ import cors from "cors";
 import "dotenv/config";
 
 const app = express();
-<<<<<<< HEAD
 app.use(
   cors({
     origin: [
@@ -25,12 +24,7 @@ app.use(
     credentials: true,
   })
 );
-=======
-app.use(cors({
-  origin: 'http://148.202.89.67:3600', // Cambia esto a la URL de tu frontend
-  credentials: true,
-}));
->>>>>>> 6bdabd3e584e8cec58a4c2fa83e1b990e246739e
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
