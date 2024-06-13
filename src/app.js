@@ -12,10 +12,18 @@ import cors from "cors";
 import "dotenv/config";
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000', // Cambia esto a la URL de tu frontend
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "http://148.202.89.67:3600",//repositorio
+      "http://148.202.89.67:3500",//rama de desarrollo
+      "http://148.202.89.67:3100",//dashboard
+      "http://localhost:3000",
+      "http://localhost:3001",
+    ],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
